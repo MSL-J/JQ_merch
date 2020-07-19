@@ -1,15 +1,17 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Intro from "Pages/Intro";
-import Signup from "Pages/SignUp";
-import Upload from "Pages/Upload";
-import Processing from "Pages/Processing";
-import Download from "Pages/Download";
+import Nav from "components/Nav";
+import Intro from "pages/Intro";
+import Signup from "pages/SignUp";
+import Upload from "pages/Upload";
+import Processing from "pages/Processing";
+import Download from "pages/Download";
 
 class Routes extends React.Component {
   render() {
     return (
       <Router>
+        <Nav />
         <Switch>
           <Route exact path="/" component={Intro} />
           <Route exact path="/signup" component={Signup} />
