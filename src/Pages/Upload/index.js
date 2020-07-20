@@ -1,14 +1,24 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
+import DropZone from "./dragNDrop";
 
 class Upload extends Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      dropActive: false,
+    };
   }
 
+  dropActive = () => {
+    this.setState({
+      dropActive: true,
+    });
+  };
+
   render() {
+    const { dropActive } = this.state;
     return (
       <UploadContainer>
         <TitleContainer>작업할 상품 업로드</TitleContainer>
@@ -16,7 +26,11 @@ class Upload extends Component {
           <SelectBox>
             <BoxTitle>액셀 (플레이오토 양식)</BoxTitle>
             <UploadMethod>
-              <button>파일 선택하기</button>
+              {dropActive ? (
+                <DropZone />
+              ) : (
+                <button onClick={() => this.dropActive()}>파일 선택하기</button>
+              )}
               <button>업로드 하기</button>
             </UploadMethod>
           </SelectBox>
@@ -37,7 +51,6 @@ export default withRouter(Upload);
 
 const UploadContainer = styled.div`
   width: 60%;
-  height: 80vh;
   margin: 5vh auto 0;
   display: flex;
   flex-direction: column;
@@ -53,8 +66,7 @@ const TitleContainer = styled.div`
 `;
 
 const Choices = styled.div`
-  width: 50%;
-  height: 60%;
+  width: 70%;
   margin-top: 8vh;
   display: flex;
   flex-direction: column;
@@ -62,14 +74,13 @@ const Choices = styled.div`
 `;
 
 const SelectBox = styled.div`
-  height: 40%;
   border: 1px solid black;
   border-radius: 10px;
+  margin-bottom: 10%;
 `;
 
 const BoxTitle = styled.div`
   height: 32px;
-  border-bottom: 1px solid black;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   padding-left: 10px;
@@ -81,7 +92,8 @@ const BoxTitle = styled.div`
 const UploadMethod = styled.div`
   display: flex;
   justify-content: space-around;
-  margin-top: 5%;
+  align-items: center;
+  margin: 5% 0;
   button {
     height: 50px;
     width: 170px;
