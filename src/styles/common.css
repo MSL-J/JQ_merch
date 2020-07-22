@@ -23,6 +23,10 @@ a {
   color: inherit;
 }
 
+ol {
+  margin: 0;
+}
+
 @font-face {
   font-family: "notoKrR";
   font-style: normal;
