@@ -16,7 +16,7 @@ class Nav extends Component {
 export default withRouter(Nav);
 
 const NavContainer = styled.div`
-  height: 80px;
+  height: 10vh;
   position: relative;
   display: flex;
   align-items: center;
@@ -33,7 +33,7 @@ const LogoContainer = styled.div`
   width: 150px;
   height: 45px;
   background-image: url("https://www.justq.co.kr/images/justq_logo_w.png");
-  background-size: cover;
+  background-size: contain;
   position: absolute;
   left: 50px;
 `;

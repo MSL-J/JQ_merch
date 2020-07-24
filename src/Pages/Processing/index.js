@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import Modified from "./components/Modified";
 import htmlToImage from "html-to-image";
 import styled from "styled-components";
 
@@ -76,46 +77,23 @@ class Processing extends Component {
                   <div>heloleooeoeoeo</div>
                   <div>heloleooeoeoeo</div>
                   <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
+                  <div>heloleooeoeoeo</div>
                 </div>
               </DetailHTML>
             </DetailBox>
           </Detail>
         </Original>
-        <Modified>
-          <Title>
-            <div>(수정) 상품명 :</div>
-            <ol>
-              {Array(5)
-                .fill()
-                .map(() => {
-                  return (
-                    <li>
-                      <input></input>
-                    </li>
-                  );
-                })}
-            </ol>
-          </Title>
-          <Title>
-            <div>(수정) 키워드 :</div>
-            <ol>
-              {Array(5)
-                .fill()
-                .map(() => {
-                  return <li></li>;
-                })}
-            </ol>
-          </Title>
-          <Title>
-            <div>(수정) 카테고리 :</div>
-            <input></input>
-          </Title>
-          <Title>
-            <div>(수정) 원산지 :</div>
-            <input></input>
-          </Title>
-          <ModComplete>개선 완료</ModComplete>
-        </Modified>
+        <Modified />
       </ProcessingContainer>
     );
   }
@@ -124,11 +102,11 @@ class Processing extends Component {
 export default withRouter(Processing);
 
 const ProcessingContainer = styled.div`
-  margin-bottom: 5vh;
+  padding-bottom: 5vh;
   position: relative;
 `;
 
-const WhichRow = styled.h1`
+export const WhichRow = styled.h1`
   margin-top: 3vh;
   font-size: 34px;
   font-weight: 600;
@@ -142,17 +120,18 @@ const WhichRow = styled.h1`
 const Original = styled.div`
   background-color: white;
   margin-left: 10vw;
+  margin-bottom: 5vh;
   width: 40%;
   padding-top: 5vh;
 `;
 
 const OrigData = styled.div`
   margin-bottom: 3vh;
-  padding-left: 1vw;
 `;
 
 const Title = styled.div`
   margin-bottom: 15px;
+  padding-left: 1vw;
   font-size: 20px;
   font-weight: 600;
   span {
@@ -166,7 +145,6 @@ const Title = styled.div`
 
 const Detail = styled.div`
   ${Title} {
-    padding-left: 1vw;
   }
 `;
 
@@ -182,28 +160,3 @@ const DetailHTML = styled.div`
 `;
 
 const DetailImg = styled.div``;
-
-const Modified = styled.div`
-  position: fixed;
-  right: 10vw;
-  top: 23vh;
-  border: 1px solid steelblue;
-  background-color: white;
-  padding: 4vh 4vw;
-  margin-bottom: 100px;
-  ${Title} {
-    display: flex;
-    font-size: 20px;
-  }
-`;
-
-const ModComplete = styled.button`
-  width: 100px;
-  height: 50px;
-  border-radius: 15px;
-  margin: 5vh 0 0 30%;
-  color: white;
-  font-size: 20px;
-  font-weight: 600;
-  background-color: steelblue;
-`;

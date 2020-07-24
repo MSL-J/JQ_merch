@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import styled from "styled-components";
 
 class Intro extends Component {
@@ -12,15 +12,22 @@ class Intro extends Component {
     return (
       <IntroContainer>
         <LogoContainer>
-          <img src="https://www.justq.co.kr/images/justq_logo_c.png" />
+          <img
+            alt="logo"
+            src="https://www.justq.co.kr/images/justq_logo_c.png"
+          />
         </LogoContainer>
         <SepLine />
         <ProjDesc>
           Just Q에서 개발한 상품가공 시스템의 prototype입니다.
         </ProjDesc>
         <SignInUp>
-          <button>로그인</button>
-          <button>회원가입</button>
+          <Link to={`/upload`}>
+            <button>로그인</button>
+          </Link>
+          <Link>
+            <button>회원가입</button>
+          </Link>
         </SignInUp>
       </IntroContainer>
     );

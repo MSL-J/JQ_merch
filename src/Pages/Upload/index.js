@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import styled from "styled-components";
 import DropZone from "./dragNDrop";
 
@@ -31,14 +31,18 @@ class Upload extends Component {
               ) : (
                 <button onClick={() => this.dropActive()}>파일 선택하기</button>
               )}
-              <button>업로드 하기</button>
+              <Link to={`/processing`}>
+                <button>업로드 하기</button>
+              </Link>
             </UploadMethod>
           </SelectBox>
           <SelectBox>
             <BoxTitle>저스트큐 서버</BoxTitle>
             <UploadMethod>
               <button>카테고리 선택하기</button>
-              <button>업로드 하기</button>
+              <Link to={`/processing`}>
+                <button>업로드 하기</button>
+              </Link>
             </UploadMethod>
           </SelectBox>
         </Choices>

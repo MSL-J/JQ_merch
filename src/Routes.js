@@ -6,6 +6,7 @@ import Signup from "pages/SignUp";
 import Upload from "pages/Upload";
 import Processing from "pages/Processing";
 import Download from "pages/Download";
+import Footer from "components/Footer";
 
 class Routes extends React.Component {
   render() {
@@ -19,6 +20,7 @@ class Routes extends React.Component {
           <Route exact path="/processing" component={Processing} />
           <Route exact path="/download" component={Download} />
         </Switch>
+        <Footer />
       </Router>
     );
   }
