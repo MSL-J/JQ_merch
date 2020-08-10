@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import styled from "styled-components";
 
 class Nav extends Component {
   render() {
     return (
       <NavContainer>
-        <LogoContainer />
+        <Link to={`/`}>
+          <LogoContainer />
+        </Link>
         <span>상품가공 프로젝트</span>
       </NavContainer>
     );
@@ -21,19 +24,22 @@ const NavContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(0, 118, 163);
+  background-color: rgb(42, 73, 97);
   color: white;
   span {
     font-size: 40px;
     font-weight: bolder;
   }
+  a {
+    position: absolute;
+    left: 50px;
+  }
 `;
 
 const LogoContainer = styled.div`
-  width: 150px;
-  height: 45px;
-  background-image: url("https://www.justq.co.kr/images/justq_logo_w.png");
+  width: 110px;
+  height: 70px;
+  background-image: url("https://justq.cafe24.com/wp-content/uploads/2020/07/logo_final_w-1.png");
   background-size: contain;
-  position: absolute;
-  left: 50px;
+  background-repeat: no-repeat;
 `;

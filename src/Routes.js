@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import Nav from "components/Nav";
 import Intro from "pages/Intro";
 import Signup from "pages/SignUp";
@@ -19,6 +24,7 @@ class Routes extends React.Component {
           <Route exact path="/upload" component={Upload} />
           <Route exact path="/processing" component={Processing} />
           <Route exact path="/download" component={Download} />
+          <Redirect from="*" to="/" />
         </Switch>
         <Footer />
       </Router>

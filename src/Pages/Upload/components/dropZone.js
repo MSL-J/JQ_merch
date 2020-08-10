@@ -1,7 +1,9 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
-import "./dragNDrop.css";
+// import excelStore from "../../../service/store";
+import localforage from "localforage";
+import "./dropZone.css";
 
 function DropZone(props) {
   const onDrop = useCallback((acceptedFiles) => {
@@ -13,7 +15,6 @@ function DropZone(props) {
       reader.onload = () => {
         // Do whatever you want with the file contents
         const binaryStr = reader.result;
-        // console.log(binaryStr);
 
         let readedData = XLSX.read(binaryStr, { type: "binary" });
         const wsname = readedData.SheetNames[0];
@@ -21,8 +22,14 @@ function DropZone(props) {
 
         /* Convert array to json*/
         const dataParse = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        console.log(dataParse);
+        // console.log(dataParse);
+        // excelStore.upload(JSON.stringify(dataParse));
+        localforage.setItem("data", dataParse);
+        // localStorage.setItem("data", JSON.stringify(dataParse));
+        // localStorage.setItem("row", 1);
+        // return dataParse;
       };
+
       reader.readAsBinaryString(file);
     });
   }, []);

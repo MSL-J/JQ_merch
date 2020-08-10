@@ -11,12 +11,7 @@ class Intro extends Component {
   render() {
     return (
       <IntroContainer>
-        <LogoContainer>
-          <img
-            alt="logo"
-            src="https://www.justq.co.kr/images/justq_logo_c.png"
-          />
-        </LogoContainer>
+        <LogoContainer />
         <SepLine />
         <ProjDesc>
           Just Q에서 개발한 상품가공 시스템의 prototype입니다.
@@ -43,13 +38,17 @@ const IntroContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   flex-direction: column;
+  align-items: center;
   background-color: white;
   border-radius: 25px;
 `;
 
 const LogoContainer = styled.div`
-  display: flex;
-  justify-content: center;
+  width: 200px;
+  height: 200px;
+  background-image: url("http://www.aitimes.com/news/photo/201910/120047_115127_4113.png");
+  background-size: contain;
+  background-repeat: no-repeat;
 `;
 
 const SepLine = styled.div`
@@ -69,6 +68,7 @@ const ProjDesc = styled.div`
 const SignInUp = styled.div`
   display: flex;
   justify-content: space-evenly;
+  width: 90%;
   button {
     width: 200px;
     height: 50px;
