@@ -138,7 +138,7 @@ const SelectBox = styled.div`
   border-radius: 10px;
   margin-bottom: 10%;
   input {
-    margin: 0 0 10px 20px;
+    margin: 0 0 10px 30px;
     padding-left: 5px;
     width: 300px;
   }

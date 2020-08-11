@@ -17,7 +17,7 @@ class Download extends Component {
   componentDidMount = async () => {
     const raw = await localforage.getItem("data");
     const row = await localforage.getItem("row");
-    console.log(raw, row);
+    // console.log(raw, row);
 
     await this.setState(
       {
@@ -25,7 +25,7 @@ class Download extends Component {
         row,
       },
       () => {
-        console.log(this.state.raw);
+        // console.log(this.state.raw);
       }
     );
   };

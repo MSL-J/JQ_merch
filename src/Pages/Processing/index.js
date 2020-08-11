@@ -4,9 +4,11 @@ import Modified from "./components/Modified";
 import htmlToImage from "html-to-image";
 import ReactCrop from "react-image-crop";
 import localforage from "localforage";
-import excelStore from "../../service/store";
+import AWS from "aws-sdk";
 import "react-image-crop/dist/ReactCrop.css";
 import styled from "styled-components";
+
+require("dotenv").config();
 
 class Processing extends Component {
   constructor() {
@@ -40,7 +42,6 @@ class Processing extends Component {
     const raw = await localforage.getItem("data");
     const row = await localforage.getItem("row");
     const data = raw[row];
-    console.log(raw, row, data);
 
     await this.setState(
       {
@@ -48,12 +49,8 @@ class Processing extends Component {
         row,
         data,
       },
-      () => {
-        console.log(this.state.data);
-      }
+      () => {}
     );
-
-    console.log(this.state.data);
 
     let newState = await this.state.data[33]
       .split(`src="`)
@@ -65,28 +62,22 @@ class Processing extends Component {
       .split("<IMG")
       .join("<IMG crossOrigin");
 
-    console.log(newState);
-
     let modNode = document.getElementById("my-node");
     modNode.innerHTML = await newState;
 
     var imgs = Array.from(modNode.getElementsByTagName("img")),
       len = imgs.length,
       counter = 0;
-    console.log("herhehrheehh", imgs);
 
     let incrementCounter = () => {
       counter++;
-      console.log("dfdfdfdfdfd", counter);
 
       if (counter === len) {
         this.html2Image(modNode);
-        console.log("hey");
       }
     };
 
     Array.from(modNode.getElementsByTagName("img")).forEach((img) => {
-      console.log("here", img);
       if (img.complete) incrementCounter();
       else img.addEventListener("load", incrementCounter, false);
     });
@@ -149,9 +140,87 @@ class Processing extends Component {
   };
 
   async makeClientCrop(crop) {
+    const { data, column } = this.state;
+
     if (this.imageRef && crop.width && crop.height) {
       const croppedImageUrl = await this.getCroppedImg(this.imageRef, crop);
-      this.setState(
+
+      var bucketName = "just-q-crop-img";
+      var bucketRegion = "ap-northeast-2";
+      var IdentityPoolId =
+        "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
+
+      AWS.config.update({
+        region: bucketRegion,
+        credentials: new AWS.CognitoIdentityCredentials({
+          IdentityPoolId: IdentityPoolId,
+        }),
+      });
+
+      var s3 = new AWS.S3({
+        apiVersion: "2006-03-01",
+        params: {
+          Bucket: bucketName,
+        },
+      });
+
+      function addPhoto(albumName) {
+        // var files = document.getElementById("photoupload").files;
+        // if (!files.length) {
+        //   return alert("Please choose a file to upload first.");
+        // }
+        // var file = files[0];
+        var file = croppedImageUrl;
+        var fileName = data[column.name];
+        // var albumPhotosKey = encodeURIComponent(albumName) + "//";
+
+        var photoKey = fileName;
+        s3.upload(
+          {
+            Key: photoKey,
+            Body: file,
+            ACL: "public-read",
+          },
+          function (err, data) {
+            if (err) {
+              console.log(err);
+              return alert(
+                "There was an error uploading your photo: ",
+                err.message
+              );
+            }
+            alert("Successfully uploaded photo.");
+            // viewAlbum(albumName);
+          }
+        );
+      }
+
+      function getPhoto() {
+        var file = croppedImageUrl;
+        var fileName = data[column.name];
+        s3.getObject(
+          {
+            Bucket: bucketName,
+            Key: fileName,
+          },
+          function (err, data) {
+            if (err) {
+              console.log(err);
+              return alert(
+                "There was an error getting your photo: ",
+                err.message
+              );
+            }
+            alert("Successfully got the photo.");
+            console.log(data.Body.toString("utf-8"));
+          }
+        );
+      }
+
+      await addPhoto();
+      await getPhoto();
+
+      await this.setState(
         {
           croppedImageUrl: [...this.state.croppedImageUrl, croppedImageUrl],
         },
@@ -162,7 +231,7 @@ class Processing extends Component {
     }
   }
 
-  getCroppedImg(image, crop) {
+  async getCroppedImg(image, crop) {
     const canvas = document.createElement("canvas");
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
@@ -170,7 +239,7 @@ class Processing extends Component {
     canvas.height = crop.height;
     const ctx = canvas.getContext("2d");
 
-    ctx.drawImage(
+    await ctx.drawImage(
       image,
       crop.x * scaleX,
       crop.y * scaleY,
@@ -224,14 +293,31 @@ class Processing extends Component {
       croppedImageCoord,
     } = this.state;
     const { name, keyword, category, origin } = this.state.column;
-    console.log(mod.newName.join());
+
+    // const config = {
+    //   bucketName: "just-q-crop-img",
+    //   // dirName: "photos" /* optional */,
+    //   region: "ap-northeast-2",
+    //   accessKeyId: process.env.ACCESS_KEY_ID,
+    //   secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    // };
+    // console.log(
+    //   process.env.REACT_APP_ACCESS_KEY_ID,
+    //   process.env.REACT_APP_SECRET_ACCESS_KEY
+    // );
+
+    // await croppedImageUrl.forEach(async (file) => {
+    //   console.log(file);
+    //   await S3FileUpload.uploadFile(file, config)
+    //     .then((data) => console.log(data))
+    //     .catch((err) => console.error(err));
+    // });
 
     // let modified = {};
     // mod.newName.length && (modified[name] = mod.newName);
     // mod.newKeyword && (modified[keyword] = mod.newKeyword);
     // mod.newCategory && (modified[category] = mod.newCategory);
     // mod.newOrigin && (modified[origin] = mod.newOrigin);
-
     // console.log(modified);
 
     mod.newName.length && (await (data[name] = mod.newName.join()));
