@@ -1,7 +1,6 @@
-import React, { PureComponent } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
-import styled from "styled-components";
 
 class Popup extends React.Component {
   constructor(props) {

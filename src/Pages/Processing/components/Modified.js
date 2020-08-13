@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import React from "react";
 import { withRouter } from "react-router-dom";
 import Popup from "components/popup";
 import styled from "styled-components";
@@ -135,7 +134,14 @@ class Modified extends React.Component {
       newCategory,
       newOrigin,
     } = this.state;
-    const { ogName, ogCategory, ogOrigin, ogKeyword, onComplete } = this.props;
+    const {
+      ogName,
+      ogCategory,
+      ogOrigin,
+      ogKeyword,
+      onComplete,
+      nextItem,
+    } = this.props;
     return (
       <AsideContainer>
         <AsideTitle>
@@ -235,13 +241,23 @@ class Modified extends React.Component {
             onChange={(e) => this.changeValue(e, "Origin")}
           ></input>
         </AsideTitle>
-        <ModComplete
-          onClick={() => {
-            onComplete({ newName, newKeyword, newCategory, newOrigin });
-          }}
-        >
-          개선 완료
-        </ModComplete>
+        {nextItem ? (
+          <ModComplete
+            onClick={() => {
+              this.props.history.push("/download");
+            }}
+          >
+            다음 상품
+          </ModComplete>
+        ) : (
+          <ModComplete
+            onClick={() => {
+              onComplete({ newName, newKeyword, newCategory, newOrigin });
+            }}
+          >
+            개선 완료
+          </ModComplete>
+        )}
       </AsideContainer>
     );
   }

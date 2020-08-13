@@ -73,9 +73,7 @@ class Download extends Component {
           >
             그만하고 엑셀로 다운받기
           </button>
-          <button onClick={() => localforage.clear()}>
-            그만하고 저스트큐 서버로 보내기
-          </button>
+          <button>그만하고 저스트큐 서버로 보내기</button>
         </ButtonContainer>
       </DownloadContainer>
     );

@@ -30,15 +30,12 @@ class Processing extends Component {
       },
       croppedImageUrl: [],
       croppedImageCoord: "",
+      nextItem: false,
+      uploading: false,
     };
   }
 
   componentDidMount = async () => {
-    // excelStore.subscribe(this.onComplete);
-    // excelStore.init();
-    // console.log(excelStore.init());
-    // const raw = excelStore.retrieve();
-    // const row = Number(excelStore.row());
     const raw = await localforage.getItem("data");
     const row = await localforage.getItem("row");
     const data = raw[row];
@@ -81,6 +78,67 @@ class Processing extends Component {
       if (img.complete) incrementCounter();
       else img.addEventListener("load", incrementCounter, false);
     });
+
+    var bucketName = "just-q-crop-img";
+    var bucketRegion = "ap-northeast-2";
+    var IdentityPoolId = "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
+
+    AWS.config.update({
+      region: bucketRegion,
+      credentials: new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: IdentityPoolId,
+      }),
+    });
+
+    var s3 = new AWS.S3({
+      apiVersion: "2006-03-01",
+      params: {
+        Bucket: bucketName,
+      },
+    });
+
+    function createAlbum(albumName) {
+      albumName = albumName.trim();
+      albumName = albumName.replace("/", "");
+      if (!albumName) {
+        return alert(
+          "Album names must contain at least one non-space character."
+        );
+      }
+      if (albumName.indexOf("/") !== -1) {
+        return alert("Album names cannot contain slashes.");
+      }
+      var albumKey = albumName + "/";
+      s3.headObject(
+        {
+          Key: albumKey,
+        },
+        function (err, data) {
+          if (!err) {
+            return alert("Album already exists.");
+          }
+          if (err.code !== "NotFound") {
+            return alert(
+              "There was an error creating your album: " + err.message
+            );
+          }
+          s3.putObject(
+            {
+              Key: albumKey,
+            },
+            function (err, data) {
+              if (err) {
+                return alert(
+                  "There was an error creating your album: " + err.message
+                );
+              }
+              alert("Successfully created album.");
+            }
+          );
+        }
+      );
+    }
+    createAlbum(this.state.data[this.state.column.name]);
   };
 
   html2Image = (modNode) => {
@@ -140,85 +198,8 @@ class Processing extends Component {
   };
 
   async makeClientCrop(crop) {
-    const { data, column } = this.state;
-
     if (this.imageRef && crop.width && crop.height) {
       const croppedImageUrl = await this.getCroppedImg(this.imageRef, crop);
-
-      var bucketName = "just-q-crop-img";
-      var bucketRegion = "ap-northeast-2";
-      var IdentityPoolId =
-        "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
-
-      AWS.config.update({
-        region: bucketRegion,
-        credentials: new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: IdentityPoolId,
-        }),
-      });
-
-      var s3 = new AWS.S3({
-        apiVersion: "2006-03-01",
-        params: {
-          Bucket: bucketName,
-        },
-      });
-
-      function addPhoto(albumName) {
-        // var files = document.getElementById("photoupload").files;
-        // if (!files.length) {
-        //   return alert("Please choose a file to upload first.");
-        // }
-        // var file = files[0];
-        var file = croppedImageUrl;
-        var fileName = data[column.name];
-        // var albumPhotosKey = encodeURIComponent(albumName) + "//";
-
-        var photoKey = fileName;
-        s3.upload(
-          {
-            Key: photoKey,
-            Body: file,
-            ACL: "public-read",
-          },
-          function (err, data) {
-            if (err) {
-              console.log(err);
-              return alert(
-                "There was an error uploading your photo: ",
-                err.message
-              );
-            }
-            alert("Successfully uploaded photo.");
-            // viewAlbum(albumName);
-          }
-        );
-      }
-
-      function getPhoto() {
-        var file = croppedImageUrl;
-        var fileName = data[column.name];
-        s3.getObject(
-          {
-            Bucket: bucketName,
-            Key: fileName,
-          },
-          function (err, data) {
-            if (err) {
-              console.log(err);
-              return alert(
-                "There was an error getting your photo: ",
-                err.message
-              );
-            }
-            alert("Successfully got the photo.");
-            console.log(data.Body.toString("utf-8"));
-          }
-        );
-      }
-
-      await addPhoto();
-      await getPhoto();
 
       await this.setState(
         {
@@ -235,8 +216,8 @@ class Processing extends Component {
     const canvas = document.createElement("canvas");
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    canvas.width = 1000;
+    canvas.height = 1000;
     const ctx = canvas.getContext("2d");
 
     await ctx.drawImage(
@@ -247,10 +228,9 @@ class Processing extends Component {
       crop.height * scaleY,
       0,
       0,
-      crop.width,
-      crop.height
+      1000,
+      1000
     );
-
     return canvas.toDataURL("image/jpeg");
   }
 
@@ -294,56 +274,96 @@ class Processing extends Component {
     } = this.state;
     const { name, keyword, category, origin } = this.state.column;
 
-    // const config = {
-    //   bucketName: "just-q-crop-img",
-    //   // dirName: "photos" /* optional */,
-    //   region: "ap-northeast-2",
-    //   accessKeyId: process.env.ACCESS_KEY_ID,
-    //   secretAccessKey: process.env.SECRET_ACCESS_KEY,
-    // };
-    // console.log(
-    //   process.env.REACT_APP_ACCESS_KEY_ID,
-    //   process.env.REACT_APP_SECRET_ACCESS_KEY
-    // );
-
-    // await croppedImageUrl.forEach(async (file) => {
-    //   console.log(file);
-    //   await S3FileUpload.uploadFile(file, config)
-    //     .then((data) => console.log(data))
-    //     .catch((err) => console.error(err));
-    // });
-
-    // let modified = {};
-    // mod.newName.length && (modified[name] = mod.newName);
-    // mod.newKeyword && (modified[keyword] = mod.newKeyword);
-    // mod.newCategory && (modified[category] = mod.newCategory);
-    // mod.newOrigin && (modified[origin] = mod.newOrigin);
-    // console.log(modified);
+    this.setState({
+      uploading: true,
+    });
 
     mod.newName.length && (await (data[name] = mod.newName.join()));
     mod.newKeyword && (await (data[keyword] = mod.newKeyword));
     mod.newCategory && (await (data[category] = mod.newCategory));
     mod.newOrigin && (await (data[origin] = mod.newOrigin));
-    await data.push(ogDetailUrl);
-    croppedImageUrl &&
-      (await data.push(
-        `${'"' + this.state.croppedImageUrl.join(`", "`)} + '"'`
-      ));
-    croppedImageCoord && (await data.push(croppedImageCoord));
+    data.push(ogDetailUrl);
 
+    var bucketName = "just-q-crop-img";
+    var bucketRegion = "ap-northeast-2";
+    var IdentityPoolId = "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
+
+    AWS.config.update({
+      region: bucketRegion,
+      credentials: new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: IdentityPoolId,
+      }),
+    });
+
+    var s3 = new AWS.S3({
+      apiVersion: "2006-03-01",
+      params: {
+        Bucket: bucketName,
+      },
+    });
+
+    function dataURItoBlob(dataURI) {
+      var binary = atob(dataURI.split(",")[1]);
+      var array = [];
+      for (var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+      }
+      return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
+    }
+
+    function addPhoto(albumName, file, idx) {
+      let fileData = dataURItoBlob(file);
+      let fileName = idx + 1;
+      let albumPhotosKey = albumName + "/";
+
+      let photoKey = albumPhotosKey + fileName;
+      let each = s3.upload(
+        {
+          Key: photoKey,
+          ContentType: "image/jpeg",
+          Body: fileData,
+          ACL: "public-read",
+        },
+        function (err, data) {
+          if (err) {
+            console.log(err);
+            return alert(
+              "There was an error uploading your photo: ",
+              err.message
+            );
+          }
+          console.log("look", data.Location);
+          return data.Location;
+        }
+      );
+      let promiseEach = each.promise();
+      return promiseEach;
+    }
+
+    const urls = await Promise.all(
+      croppedImageUrl.map((file, idx, arr) => {
+        return addPhoto(data[name], file, idx);
+      })
+    );
+
+    let s3Url = [];
+    urls.forEach((url) => {
+      s3Url.push(url.Location);
+    });
+
+    s3Url.length && data.push(`${'"' + s3Url.join(`", "`) + '"'}`);
+    croppedImageCoord && data.push(croppedImageCoord);
     raw[row] = data;
-
-    // await localforage.setItem(`new_${row}`, {
-    //   row,
-    //   ogDetailUrl,
-    //   croppedImageUrl,
-    //   croppedImageCoord,
-    //   modified,
-    // });
-
-    await localforage.setItem("data", raw);
-
-    this.props.history.push("/download");
+    localforage.setItem("data", raw, () => {
+      this.setState(
+        {
+          uploading: false,
+        },
+        () => {
+          this.props.history.push("/download");
+        }
+      );
+    });
   };
 
   render() {
@@ -355,7 +375,8 @@ class Processing extends Component {
       data,
       crop,
       croppedImageUrl,
-      croppedImageCoord,
+      nextItem,
+      uploading,
     } = this.state;
 
     return (
@@ -364,6 +385,12 @@ class Processing extends Component {
           <Loading>
             <LogoContainer />
             <span>데이터를 불러오는 중입니다</span>
+          </Loading>
+        )}
+        {uploading && (
+          <Loading>
+            <LogoContainer />
+            <span>데이터를 저장하는 중입니다</span>
           </Loading>
         )}
         <WhichRow>
@@ -416,7 +443,6 @@ class Processing extends Component {
                   return (
                     <img
                       alt="Crop"
-                      style={{ maxWidth: "100%" }}
                       src={cropped}
                       onClick={() => {
                         console.log(idx);
@@ -434,6 +460,7 @@ class Processing extends Component {
           ogOrigin={data && data[column.origin]}
           ogKeyword={data && data[column.keyword]}
           onComplete={(mod) => this.onComplete(mod)}
+          nextItem={nextItem}
         />
       </ProcessingContainer>
     );
@@ -557,5 +584,6 @@ const ScannedImg = styled.div`
 
   img {
     border: 1px solid black;
+    max-width: 150px;
   }
 `;
