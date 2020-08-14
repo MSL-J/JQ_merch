@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { WhichRow } from "../Processing";
 import * as XLSX from "xlsx";
 import localforage from "localforage";
@@ -17,21 +17,17 @@ class Download extends Component {
   componentDidMount = async () => {
     const raw = await localforage.getItem("data");
     const row = await localforage.getItem("row");
-    // console.log(raw, row);
 
-    await this.setState(
-      {
-        raw,
-        row,
-      },
-      () => {
-        // console.log(this.state.raw);
-      }
-    );
+    await this.setState({
+      raw,
+      row,
+    });
   };
 
   nextRow = () => {
-    localforage.setItem("row", this.state.row + 1);
+    localforage.setItem("row", this.state.row + 1, () => {
+      this.props.history.push("/processing");
+    });
   };
 
   download = async () => {
@@ -39,11 +35,9 @@ class Download extends Component {
 
     const workBook = await XLSX.utils.book_new(); // create a new blank book
     const workSheet = await XLSX.utils.json_to_sheet(raw, { skipHeader: true });
-    console.log(workSheet);
 
     await XLSX.utils.book_append_sheet(workBook, workSheet, "data"); // add the worksheet to the book
     await XLSX.writeFile(workBook, "[수정본] 데이터.xlsx"); // initiate a file download in browser
-    localforage.clear();
   };
 
   render() {
@@ -57,15 +51,13 @@ class Download extends Component {
           <div>작업 완료</div>
         </WhichRow>
         <ButtonContainer>
-          <Link to={`/processing`}>
-            <button
-              onClick={() => {
-                this.nextRow();
-              }}
-            >
-              이어서 하기
-            </button>
-          </Link>
+          <button
+            onClick={() => {
+              this.nextRow();
+            }}
+          >
+            이어서 하기
+          </button>
           <button
             onClick={() => {
               this.download();

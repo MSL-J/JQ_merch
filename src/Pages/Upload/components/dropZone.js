@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
-// import excelStore from "../../../service/store";
 import localforage from "localforage";
 import "./dropZone.css";
 
@@ -22,12 +21,7 @@ function DropZone(props) {
 
         /* Convert array to json*/
         const dataParse = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        // console.log(dataParse);
-        // excelStore.upload(JSON.stringify(dataParse));
         localforage.setItem("data", dataParse);
-        // localStorage.setItem("data", JSON.stringify(dataParse));
-        // localStorage.setItem("row", 1);
-        // return dataParse;
       };
 
       reader.readAsBinaryString(file);

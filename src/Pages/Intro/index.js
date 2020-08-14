@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter, Link } from "react-router-dom";
+import localforage from "localforage";
 import styled from "styled-components";
 
 class Intro extends Component {
@@ -7,6 +8,10 @@ class Intro extends Component {
     super();
     this.state = {};
   }
+
+  componentDidMount = () => {
+    localforage.clear();
+  };
 
   render() {
     return (

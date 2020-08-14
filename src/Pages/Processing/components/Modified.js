@@ -3,57 +3,6 @@ import { withRouter } from "react-router-dom";
 import Popup from "components/popup";
 import styled from "styled-components";
 
-// class Popup extends PureComponent {
-//   constructor(props) {
-//     super(props);
-//     // STEP 1: create a container <div>
-//     this.containerEl = document.createElement("div");
-//     this.externalWindow = null;
-//   }
-
-//   componentDidMount() {
-//     // STEP 3: open a new browser window and store a reference to it
-//     this.externalWindow = window.open(
-//       "",
-//       "",
-//       "width=600,height=400,left=200,top=200"
-//     );
-
-//     // STEP 4: append the container <div> (that has props.children appended to it) to the body of the new window
-//     this.externalWindow.document.body.appendChild(this.containerEl);
-//     this.externalWindow.document.title = this.props.name;
-
-//     // Applying(appending) styles to all new windows
-//     function copyStyles(sourceDoc, targetDoc) {
-//       Array.from(
-//         sourceDoc.querySelectorAll('link[rel="stylesheet"], style')
-//       ).forEach((link) => {
-//         targetDoc.head.appendChild(link.cloneNode(true));
-//       });
-//     }
-//     copyStyles(document, this.externalWindow.document);
-
-//     // update the state in the parent component if the user closes the new window
-//     this.externalWindow.addEventListener("beforeunload", () => {
-//       this.props.closed();
-//     });
-//   }
-
-//   componentWillUnmount() {
-//     // console.log(this.props.children.props.children);
-
-//     // STEP 5: This will fire when this.state.showWindowPortal in the parent component becomes false
-//     // So we tidy up by closing the window
-//     // this.props.closed();
-//     this.externalWindow.close();
-//   }
-
-//   render() {
-//     // STEP 2: append props.children to the container <div> that isn't mounted anywhere yet
-//     return ReactDOM.createPortal(this.props.children, this.containerEl);
-//   }
-// }
-
 class Modified extends React.Component {
   constructor(props) {
     super(props);
@@ -81,25 +30,15 @@ class Modified extends React.Component {
   };
 
   close = () => {
-    this.setState(
-      {
-        name: false,
-      },
-      () => {
-        console.log(this.state.name);
-      }
-    );
+    this.setState({
+      name: false,
+    });
   };
 
   active = (popup) => {
-    this.setState(
-      {
-        [popup]: !this.state[popup],
-      },
-      () => {
-        console.log(this.state[popup]);
-      }
-    );
+    this.setState({
+      [popup]: !this.state[popup],
+    });
   };
 
   changeValue = (e, which) => {
@@ -134,21 +73,13 @@ class Modified extends React.Component {
       newCategory,
       newOrigin,
     } = this.state;
-    const {
-      ogName,
-      ogCategory,
-      ogOrigin,
-      ogKeyword,
-      onComplete,
-      nextItem,
-    } = this.props;
+    const { ogName, ogCategory, ogOrigin, ogKeyword, onComplete } = this.props;
     return (
       <AsideContainer>
         <AsideTitle>
           <div>(기존) 상품명 :</div>
           <span>{ogName}</span>
         </AsideTitle>
-        {/* <Popup /> */}
         <AsideTitle>
           <div>
             (수정) 상품명 :
@@ -197,12 +128,15 @@ class Modified extends React.Component {
               </PopupWrapper>
             </Popup>
           )}
-
-          <ol>
-            {newName.map((name) => {
-              return <li>{name}</li>;
-            })}
-          </ol>
+          {newName.length ? (
+            <ol>
+              {newName.map((name) => {
+                return <li>{name}</li>;
+              })}
+            </ol>
+          ) : (
+            <span> 상품명 추천에서 추가하세요</span>
+          )}
         </AsideTitle>
         <AsideTitle>
           <div>
@@ -241,23 +175,13 @@ class Modified extends React.Component {
             onChange={(e) => this.changeValue(e, "Origin")}
           ></input>
         </AsideTitle>
-        {nextItem ? (
-          <ModComplete
-            onClick={() => {
-              this.props.history.push("/download");
-            }}
-          >
-            다음 상품
-          </ModComplete>
-        ) : (
-          <ModComplete
-            onClick={() => {
-              onComplete({ newName, newKeyword, newCategory, newOrigin });
-            }}
-          >
-            개선 완료
-          </ModComplete>
-        )}
+        <ModComplete
+          onClick={() => {
+            onComplete({ newName, newKeyword, newCategory, newOrigin });
+          }}
+        >
+          개선 완료
+        </ModComplete>
       </AsideContainer>
     );
   }
@@ -288,7 +212,7 @@ const AsideTitle = styled.div`
     flex-direction: column;
     width: 40%;
     button {
-      width: 70%;
+      width: 80px;
       min-height: 30px;
       margin-top: 10px;
     }

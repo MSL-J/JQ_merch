@@ -8,8 +8,6 @@ import AWS from "aws-sdk";
 import "react-image-crop/dist/ReactCrop.css";
 import styled from "styled-components";
 
-require("dotenv").config();
-
 class Processing extends Component {
   constructor() {
     super();
@@ -30,7 +28,6 @@ class Processing extends Component {
       },
       croppedImageUrl: [],
       croppedImageCoord: "",
-      nextItem: false,
       uploading: false,
     };
   }
@@ -40,14 +37,11 @@ class Processing extends Component {
     const row = await localforage.getItem("row");
     const data = raw[row];
 
-    await this.setState(
-      {
-        raw,
-        row,
-        data,
-      },
-      () => {}
-    );
+    await this.setState({
+      raw,
+      row,
+      data,
+    });
 
     let newState = await this.state.data[33]
       .split(`src="`)
@@ -62,7 +56,7 @@ class Processing extends Component {
     let modNode = document.getElementById("my-node");
     modNode.innerHTML = await newState;
 
-    var imgs = Array.from(modNode.getElementsByTagName("img")),
+    let imgs = Array.from(modNode.getElementsByTagName("img")),
       len = imgs.length,
       counter = 0;
 
@@ -79,9 +73,9 @@ class Processing extends Component {
       else img.addEventListener("load", incrementCounter, false);
     });
 
-    var bucketName = "just-q-crop-img";
-    var bucketRegion = "ap-northeast-2";
-    var IdentityPoolId = "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
+    let bucketName = "just-q-crop-img";
+    let bucketRegion = "ap-northeast-2";
+    let IdentityPoolId = "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
 
     AWS.config.update({
       region: bucketRegion,
@@ -90,7 +84,7 @@ class Processing extends Component {
       }),
     });
 
-    var s3 = new AWS.S3({
+    let s3 = new AWS.S3({
       apiVersion: "2006-03-01",
       params: {
         Bucket: bucketName,
@@ -105,21 +99,18 @@ class Processing extends Component {
           "Album names must contain at least one non-space character."
         );
       }
-      if (albumName.indexOf("/") !== -1) {
-        return alert("Album names cannot contain slashes.");
-      }
-      var albumKey = albumName + "/";
+      let albumKey = albumName + "/";
       s3.headObject(
         {
           Key: albumKey,
         },
         function (err, data) {
           if (!err) {
-            return alert("Album already exists.");
+            return alert("S3에 같은 상품명으로 이미 생성된 폴더가 존재합니다.");
           }
           if (err.code !== "NotFound") {
             return alert(
-              "There was an error creating your album: " + err.message
+              "S3에서 폴더를 생성하는데 문제가 생겼습니다: " + err.message
             );
           }
           s3.putObject(
@@ -129,10 +120,10 @@ class Processing extends Component {
             function (err, data) {
               if (err) {
                 return alert(
-                  "There was an error creating your album: " + err.message
+                  "S3에서 폴더를 생성하는데 문제가 생겼습니다: " + err.message
                 );
               }
-              alert("Successfully created album.");
+              alert("성공적으로 S3에 폴더를 생성했습니다");
             }
           );
         }
@@ -151,16 +142,14 @@ class Processing extends Component {
         return dataUrl;
       })
       .then((dataUrl) => {
-        console.log("toIMG success!!");
         this.setState({
           ogDetailUrl: dataUrl,
           loading: false,
         });
         document.getElementById("detailHTML").style.display = "none";
-        // console.log(this.state.ogDetailUrl);
       })
       .catch(function (error) {
-        console.error("oops, something went wrong!", error);
+        alert("상세페이지를 이미지로 convert하는데 문제가 생겼습니다: ", error);
       });
   };
 
@@ -175,25 +164,16 @@ class Processing extends Component {
       let cropCoord = `[[${x},${y}], [${x + width}, ${y}], [${x + width}, ${
         y + height
       }], [${x}, ${y + height}]]`;
-      // console.log(this.state.croppedImageCoord);
-      // console.log(cropCoord);
       let originalCoord = this.state.croppedImageCoord
         ? this.state.croppedImageCoord + ", "
         : "";
-      this.setState(
-        {
-          croppedImageCoord: originalCoord + cropCoord,
-        },
-        () => {
-          console.log(this.state.croppedImageCoord);
-        }
-      );
+      this.setState({
+        croppedImageCoord: originalCoord + cropCoord,
+      });
     }
   };
 
   onCropChange = (crop, percentCrop) => {
-    // You could also use percentCrop:
-    // this.setState({ crop: percentCrop });
     this.setState({ crop });
   };
 
@@ -201,14 +181,9 @@ class Processing extends Component {
     if (this.imageRef && crop.width && crop.height) {
       const croppedImageUrl = await this.getCroppedImg(this.imageRef, crop);
 
-      await this.setState(
-        {
-          croppedImageUrl: [...this.state.croppedImageUrl, croppedImageUrl],
-        },
-        () => {
-          console.log(this.state.croppedImageUrl);
-        }
-      );
+      await this.setState({
+        croppedImageUrl: [...this.state.croppedImageUrl, croppedImageUrl],
+      });
     }
   }
 
@@ -239,28 +214,17 @@ class Processing extends Component {
     let newCoordArr = [...this.state.croppedImageCoord];
     newUrlArr.splice(idx, 1);
     newCoordArr.splice(idx, 1);
-    console.log(newUrlArr, newCoordArr);
-    this.setState(
-      {
-        croppedImageUrl: newUrlArr,
-        croppedImageCoord: newCoordArr,
-      },
-      () => {
-        console.log(this.state.croppedImageUrl, this.state.croppedImageCoord);
-      }
-    );
+    this.setState({
+      croppedImageUrl: newUrlArr,
+      croppedImageCoord: newCoordArr,
+    });
   };
 
   deleteAll = () => {
-    this.setState(
-      {
-        croppedImageUrl: [],
-        croppedImageCoord: [],
-      },
-      () => {
-        console.log(this.state.croppedImageUrl, this.state.croppedImageCoord);
-      }
-    );
+    this.setState({
+      croppedImageUrl: [],
+      croppedImageCoord: [],
+    });
   };
 
   onComplete = async (mod) => {
@@ -284,9 +248,9 @@ class Processing extends Component {
     mod.newOrigin && (await (data[origin] = mod.newOrigin));
     data.push(ogDetailUrl);
 
-    var bucketName = "just-q-crop-img";
-    var bucketRegion = "ap-northeast-2";
-    var IdentityPoolId = "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
+    let bucketName = "just-q-crop-img";
+    let bucketRegion = "ap-northeast-2";
+    let IdentityPoolId = "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
 
     AWS.config.update({
       region: bucketRegion,
@@ -295,7 +259,7 @@ class Processing extends Component {
       }),
     });
 
-    var s3 = new AWS.S3({
+    let s3 = new AWS.S3({
       apiVersion: "2006-03-01",
       params: {
         Bucket: bucketName,
@@ -303,9 +267,9 @@ class Processing extends Component {
     });
 
     function dataURItoBlob(dataURI) {
-      var binary = atob(dataURI.split(",")[1]);
-      var array = [];
-      for (var i = 0; i < binary.length; i++) {
+      let binary = atob(dataURI.split(",")[1]);
+      let array = [];
+      for (let i = 0; i < binary.length; i++) {
         array.push(binary.charCodeAt(i));
       }
       return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
@@ -326,13 +290,11 @@ class Processing extends Component {
         },
         function (err, data) {
           if (err) {
-            console.log(err);
             return alert(
-              "There was an error uploading your photo: ",
+              "S3에 이미지를 업로드 하는데 문제가 생겼습니다: ",
               err.message
             );
           }
-          console.log("look", data.Location);
           return data.Location;
         }
       );
@@ -375,7 +337,6 @@ class Processing extends Component {
       data,
       crop,
       croppedImageUrl,
-      nextItem,
       uploading,
     } = this.state;
 
@@ -445,7 +406,6 @@ class Processing extends Component {
                       alt="Crop"
                       src={cropped}
                       onClick={() => {
-                        console.log(idx);
                         this.deleteCropped(idx);
                       }}
                     />
@@ -460,7 +420,6 @@ class Processing extends Component {
           ogOrigin={data && data[column.origin]}
           ogKeyword={data && data[column.keyword]}
           onComplete={(mod) => this.onComplete(mod)}
-          nextItem={nextItem}
         />
       </ProcessingContainer>
     );
@@ -554,7 +513,6 @@ const Detail = styled.div`
 
 const DetailBox = styled.div`
   border: 2px dashed rgba(70, 130, 180, 0.6);
-  /* height: 800px; */
   position: relative;
   img {
     width: 100%;

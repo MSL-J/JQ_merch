@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import DropZone from "./components/dropZone";
 import * as XLSX from "xlsx";
 import Popup from "components/popup";
@@ -10,20 +10,32 @@ class Upload extends Component {
   constructor() {
     super();
     this.state = {
+      counter: 0,
       dropActive: false,
       popup: false,
       category: null,
       row: "",
+      input: "",
+      filteredCategory: [],
+      selected: "",
+      chosen: "",
     };
   }
 
   componentDidMount = () => {
+    window.setInterval(() => {
+      this.setState({
+        counter: this.state.counter + 1,
+      });
+    }, 1000);
+
     fetch("Category.xlsx")
       .then((res) => res.arrayBuffer())
       .then((res) => {
         let file = XLSX.read(res, { type: "array" });
         const workbook = file.Sheets[file.SheetNames[0]];
         const category = XLSX.utils.sheet_to_json(workbook, { header: 1 });
+        category.shift();
         return category;
       })
       .then((category) => {
@@ -31,6 +43,9 @@ class Upload extends Component {
           category,
         });
       });
+    window.addEventListener("beforeunload", () => {
+      this.close();
+    });
   };
 
   active = (input) => {
@@ -39,25 +54,156 @@ class Upload extends Component {
     });
   };
 
+  close = () => {
+    this.setState({
+      popup: false,
+    });
+  };
+
   whichRow = (e) => {
-    console.log(e.target.value);
     (!isNaN(Number(e.target.value)) &&
       Number(e.target.value) >= 1 &&
       e.target.value.slice(-1) !== " ") ||
     e.target.value === ""
       ? this.setState({
-          row: e.target.value,
+          row: Number(e.target.value),
         })
       : alert("1 이상의 숫자를 입력해 주세요");
   };
 
   setRowNNext = async () => {
-    await localforage.setItem("row", this.state.row ? this.state.row : 1);
-    this.props.history.push("/processing");
+    let data = await localforage.getItem("data");
+    data
+      ? await localforage.setItem(
+          "row",
+          this.state.row ? this.state.row : 1,
+          () => {
+            this.props.history.push("/processing");
+          }
+        )
+      : alert("파일을 먼저 업로드 해주세요");
+  };
+
+  findCategory = (e, search) => {
+    this.setState(
+      {
+        input: e.target.value,
+      },
+      () => {
+        search && this.search();
+      }
+    );
+  };
+
+  enterCategory = (e) => {
+    e.key === "Enter" && this.findCategory(e, true);
+  };
+
+  search = () => {
+    let { category, input } = this.state;
+    let categoryName = [];
+    let categoryNum = [];
+    for (let i in category) {
+      categoryName.push(category[i][0]);
+      categoryNum.push(category[i][1]);
+    }
+
+    input = input.trim();
+    let filteredCategory = [];
+    if (input.includes("+")) {
+      //'+' works as 'or'
+      let eachInput = input.split("+");
+      eachInput.forEach((w) => {
+        w = w.trim();
+        if (isNaN(w)) {
+          let eachCategory = categoryName.filter((c) => {
+            return c.includes(w);
+          });
+
+          filteredCategory = filteredCategory.concat(eachCategory);
+        } else {
+          for (let i in categoryNum) {
+            categoryNum[i].toString().includes(w) &&
+              filteredCategory.push(categoryName[i]);
+          }
+        }
+      });
+      filteredCategory = [...new Set(filteredCategory)]; //delete duplicates
+    } else if (input.includes("&")) {
+      // '&' works as 'and'
+      let eachInput = input.split("&");
+      eachInput.forEach((w, idx) => {
+        w = w.trim();
+        if (idx === 0) {
+          if (isNaN(w)) {
+            let eachCategory = categoryName.filter((c) => {
+              return c.includes(w);
+            });
+            filteredCategory = filteredCategory.concat(eachCategory);
+          } else {
+            for (let i in categoryNum) {
+              categoryNum[i].toString().includes(w) &&
+                filteredCategory.push(categoryName[i]);
+            }
+          }
+        } else {
+          if (isNaN(w)) {
+            filteredCategory = filteredCategory.filter((c) => {
+              return c.includes(w);
+            });
+          } else {
+            let newCategory = [];
+            for (let i in categoryNum) {
+              categoryNum[i].toString().includes(w) &&
+                filteredCategory.includes(categoryName[i]) &&
+                newCategory.push(categoryName[i]);
+            }
+            filteredCategory = newCategory;
+          }
+        }
+      });
+    } else {
+      if (isNaN(input)) {
+        filteredCategory = categoryName.filter((c) => {
+          return c.includes(input);
+        });
+      } else {
+        for (let i in categoryNum) {
+          categoryNum[i].toString().includes(input) &&
+            filteredCategory.push(categoryName[i]);
+        }
+      }
+    }
+
+    this.setState({
+      filteredCategory,
+    });
+  };
+
+  select = (c) => {
+    this.setState({
+      selected: c,
+    });
+  };
+
+  setCategory = () => {
+    this.close();
+
+    this.setState({
+      chosen: this.state.selected,
+    });
+    // here is where you fetch data of the chosen category, as a callback of the setState above
   };
 
   render() {
-    const { row, dropActive, popup } = this.state;
+    const {
+      row,
+      dropActive,
+      popup,
+      filteredCategory,
+      selected,
+      chosen,
+    } = this.state;
     return (
       <UploadContainer>
         <TitleContainer>작업할 상품 업로드</TitleContainer>
@@ -87,19 +233,67 @@ class Upload extends Component {
                 카테고리 선택하기
               </button>
               {popup && (
-                <Popup closed={() => this.active("popup")} name="카테고리 검색">
+                <Popup closed={() => this.close()} name="카테고리 검색">
                   <PopupWrapper>
                     <PopupTitle>저스트큐 카테고리</PopupTitle>
-                    <input placeholder="ex)패션"></input>
-                    <div></div>
-                    <button></button>
+                    <SearchBox>
+                      <span>
+                        {`카테고리명이나 카테고리 코드로 검색 가능합니다. (교차검색 가능, & = 'and', + = 'or')`}
+                      </span>
+                      <input
+                        placeholder="ex) 패션 + 77906"
+                        onChange={(e) => {
+                          this.findCategory(e);
+                        }}
+                        onKeyUp={(e) => {
+                          this.enterCategory(e);
+                        }}
+                      ></input>
+                      <button
+                        onClick={() => {
+                          this.search();
+                        }}
+                      >
+                        검색
+                      </button>
+                    </SearchBox>
+                    <ResultBox>
+                      {filteredCategory.length ? (
+                        filteredCategory.map((c) => {
+                          return (
+                            <div
+                              onClick={() => {
+                                this.select(c);
+                              }}
+                            >
+                              {c}
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p> 검색값을 입력해주세요</p>
+                      )}
+                    </ResultBox>
+                    <ButtonContainer>
+                      {selected ? (
+                        <div>{selected}</div>
+                      ) : (
+                        "카테고리를 선택해 주세요"
+                      )}
+                      <button
+                        onClick={() => {
+                          this.setCategory();
+                        }}
+                      >
+                        불러오기
+                      </button>
+                    </ButtonContainer>
                   </PopupWrapper>
                 </Popup>
               )}
-              <Link to={`/processing`}>
-                <button>업로드 하기</button>
-              </Link>
+              <button onClick={() => this.setRowNNext()}>업로드 하기</button>
             </UploadMethod>
+            {chosen && <Chosen>{chosen}</Chosen>}
           </SelectBox>
         </Choices>
       </UploadContainer>
@@ -138,7 +332,7 @@ const SelectBox = styled.div`
   border-radius: 10px;
   margin-bottom: 10%;
   input {
-    margin: 0 0 10px 30px;
+    margin: 0 0 10px 20px;
     padding-left: 5px;
     width: 300px;
   }
@@ -179,4 +373,60 @@ const PopupTitle = styled.div`
 const PopupWrapper = styled.div`
   height: 100%;
   background-color: white;
+  button {
+    border: solid 1px lightgrey;
+  }
+`;
+
+const SearchBox = styled.div`
+  display: flex;
+  align-items: center;
+  height: 60px;
+  margin: 10px 40px 20px;
+  border-bottom: solid 1px lightgrey;
+  span {
+    font-size: 12px;
+    margin-right: 10px;
+  }
+  input {
+    width: 120px;
+    margin-right: 10px;
+    padding-left: 5px;
+  }
+  button {
+    min-width: 50px;
+  }
+`;
+
+const ResultBox = styled.div`
+  margin: 20px auto;
+  overflow: auto;
+  width: 500px;
+  height: 200px;
+  background-color: snow;
+  border: 1px solid lightgrey;
+  div {
+    cursor: pointer;
+    border-bottom: 1px solid lightgrey;
+    padding: 3px 0 3px 3px;
+  }
+  p {
+    margin: 5px 0 0 3px;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 30px;
+  padding-top: 10px;
+  border-top: solid 1px lightgrey;
+  button {
+    margin-left: 20px;
+    min-width: 80px;
+  }
+`;
+
+const Chosen = styled.div`
+  margin: 0 0 10px 20px;
 `;
