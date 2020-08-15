@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import DropZone from "./components/dropZone";
 import * as XLSX from "xlsx";
-import Popup from "components/popup";
+import Popup from "components/Popup";
 import localforage from "localforage";
 import styled from "styled-components";
 

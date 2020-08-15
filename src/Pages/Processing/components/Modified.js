@@ -1,6 +1,6 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import Popup from "components/popup";
+import Popup from "components/Popup";
 import styled from "styled-components";
 
 class Modified extends React.Component {
