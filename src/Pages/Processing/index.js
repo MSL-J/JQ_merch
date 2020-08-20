@@ -37,6 +37,10 @@ class Processing extends Component {
     const row = await localforage.getItem("row");
     const data = raw[row];
 
+    window.onscroll = () => {
+      window.scrollTo(0, 0);
+    };
+
     await this.setState({
       raw,
       row,
@@ -146,6 +150,7 @@ class Processing extends Component {
           ogDetailUrl: dataUrl,
           loading: false,
         });
+        window.onscroll = () => {};
         document.getElementById("detailHTML").style.display = "none";
       })
       .catch(function (error) {
@@ -241,6 +246,11 @@ class Processing extends Component {
     this.setState({
       uploading: true,
     });
+
+    let y = Number(window.scrollY);
+    window.onscroll = () => {
+      window.scrollTo(0, y);
+    };
 
     mod.newName.length && (await (data[name] = mod.newName.join()));
     mod.newKeyword && (await (data[keyword] = mod.newKeyword));
@@ -343,13 +353,13 @@ class Processing extends Component {
     return (
       <ProcessingContainer>
         {loading && (
-          <Loading>
+          <Loading scrollY={window.scrollY - 150 + `px`}>
             <LogoContainer />
             <span>데이터를 불러오는 중입니다</span>
           </Loading>
         )}
         {uploading && (
-          <Loading>
+          <Loading scrollY={window.scrollY - 150 + `px`}>
             <LogoContainer />
             <span>데이터를 저장하는 중입니다</span>
           </Loading>
@@ -435,7 +445,7 @@ const ProcessingContainer = styled.div`
 
 const Loading = styled.div`
   position: absolute;
-  top: -15vh;
+  top: ${(props) => props.scrollY};
   width: 100vw;
   height: 115vh;
   background-color: lightsteelblue;
