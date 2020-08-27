@@ -1,6 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import Popup from "components/Popup";
+import { keywordsAPI } from "../../../services/apiService";
 import styled from "styled-components";
 
 class Modified extends React.Component {
@@ -13,14 +14,19 @@ class Modified extends React.Component {
       newNameInput: "",
       newName: [],
       newKeyword: "",
-      newCategory: "",
+      newCategoryCode: null,
+      newCategoryName: "",
       newOrigin: "",
+      fetchedKeywords: [],
+      chosenKeywords: [],
+      newSetKeywords: [],
     };
   }
 
   componentDidMount = () => {
     window.addEventListener("beforeunload", () => {
-      this.close();
+      this.close("name");
+      this.close("keyword");
     });
     window.setInterval(() => {
       this.setState({
@@ -29,16 +35,29 @@ class Modified extends React.Component {
     }, 1000);
   };
 
-  close = () => {
+  close = (which) => {
     this.setState({
-      name: false,
+      [which]: false,
     });
   };
 
   active = (popup) => {
+    const { newSetKeywords } = this.state;
+    const { ogKeyword } = this.props;
     this.setState({
-      [popup]: !this.state[popup],
+      [popup]: true,
     });
+    popup === "keyword" && !newSetKeywords.length
+      ? keywordsAPI(ogKeyword).then((res) => {
+          console.log(res);
+          this.setState({
+            fetchedKeywords: res,
+            chosenKeywords: newSetKeywords,
+          });
+        })
+      : this.setState({
+          chosenKeywords: newSetKeywords,
+        });
   };
 
   changeValue = (e, which) => {
@@ -64,16 +83,49 @@ class Modified extends React.Component {
     this.nameInput.value = "";
   };
 
+  chooseKeywords = (keyword) => {
+    let { chosenKeywords } = this.state;
+    chosenKeywords.includes(keyword)
+      ? chosenKeywords.splice(chosenKeywords.indexOf(keyword), 1)
+      : (chosenKeywords = [...chosenKeywords, keyword]);
+    this.setState({
+      chosenKeywords,
+    });
+  };
+
+  setNewKeywords = () => {
+    const { chosenKeywords } = this.state;
+    this.setState(
+      {
+        newSetKeywords: chosenKeywords,
+      },
+      () => {
+        this.close("keyword");
+      }
+    );
+  };
+
   render() {
     const {
       name,
       keyword,
       newName,
       newKeyword,
-      newCategory,
+      newCategoryCode,
+      newCategoryName,
       newOrigin,
+      fetchedKeywords,
+      chosenKeywords,
+      newSetKeywords,
     } = this.state;
-    const { ogName, ogCategory, ogOrigin, ogKeyword, onComplete } = this.props;
+    const {
+      ogName,
+      ogCategoryCode,
+      ogCategoryName,
+      ogOrigin,
+      ogKeyword,
+      onComplete,
+    } = this.props;
     return (
       <AsideContainer>
         <AsideTitle>
@@ -93,7 +145,7 @@ class Modified extends React.Component {
           </div>
 
           {name && (
-            <Popup closed={this.close} name="상품명 추천">
+            <Popup closed={() => this.close("name")} name="상품명 추천">
               <PopupWrapper>
                 <PopupTitle>검색단어</PopupTitle>
                 <InputField>
@@ -123,7 +175,7 @@ class Modified extends React.Component {
                   <button onClick={() => this.setNewName()}>입력</button>
                 </InputField>
                 <ButtonContainer>
-                  <button onClick={() => this.close()}>닫기</button>
+                  <button onClick={() => this.close("name")}>닫기</button>
                 </ButtonContainer>
               </PopupWrapper>
             </Popup>
@@ -150,23 +202,76 @@ class Modified extends React.Component {
             </button>
           </div>
           {keyword && (
-            <Popup closed={() => this.active("keyword")} name="키워드 추천">
-              <div>키워드 추천</div>
+            <Popup closed={() => this.close("keyword")} name="키워드 추천">
+              <PopupWrapper>
+                <PopupTitle>
+                  키워드 추천 (타 브랜드/효과/효능/과장 단어 주의)
+                </PopupTitle>
+                <TableRow>
+                  <PopupTitle>키워드</PopupTitle>
+                  <PopupTitle>모바일 월 평균 클릭 수</PopupTitle>
+                  <PopupTitle>PC 월 평균 클릭 수</PopupTitle>
+                </TableRow>
+                <KeywordList>
+                  {fetchedKeywords.length ? (
+                    fetchedKeywords.map((keyword, idx) => {
+                      return (
+                        <TableRow>
+                          <div>
+                            <input
+                              type="checkbox"
+                              checked={chosenKeywords.includes(
+                                keyword.relKeyword
+                              )}
+                              onChange={() =>
+                                this.chooseKeywords(keyword.relKeyword)
+                              }
+                            ></input>
+                            {keyword.relKeyword}
+                          </div>
+                          <div>{keyword.monthlyAveMobileClkCnt}</div>
+                          <div>{keyword.monthlyAvePcClkCnt}</div>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <span>추천 키워드를 받아오고 있습니다.</span>
+                  )}
+                </KeywordList>
+                <Chosen>
+                  <ChosenKeywords>
+                    <div>선택한 키워드</div>
+                    <div>{chosenKeywords.join(", ")}</div>
+                  </ChosenKeywords>
+                  <ChosenButtons>
+                    <button onClick={() => this.setNewKeywords()}>입력</button>
+                    <button onClick={() => this.close("keyword")}>닫기</button>
+                  </ChosenButtons>
+                </Chosen>
+              </PopupWrapper>
             </Popup>
           )}
           <div>
             <textarea
               placeholder={ogKeyword}
               onChange={(e) => this.changeValue(e, "Keyword")}
+              value={newSetKeywords.join(", ")}
             ></textarea>
           </div>
         </AsideTitle>
         <AsideTitle>
-          <div>(수정) 카테고리 :</div>
+          <div>(수정) 카테고리 코드 :</div>
           <input
-            placeholder={ogCategory}
-            onChange={(e) => this.changeValue(e, "Category")}
+            placeholder={ogCategoryCode}
+            onChange={(e) => this.changeValue(e, "CategoryCode")}
           ></input>
+        </AsideTitle>
+        <AsideTitle>
+          <div>(수정) 카테고리명 :</div>
+          <textarea
+            placeholder={ogCategoryName}
+            onChange={(e) => this.changeValue(e, "CategoryName")}
+          ></textarea>
         </AsideTitle>
         <AsideTitle>
           <div>(수정) 원산지 :</div>
@@ -177,7 +282,13 @@ class Modified extends React.Component {
         </AsideTitle>
         <ModComplete
           onClick={() => {
-            onComplete({ newName, newKeyword, newCategory, newOrigin });
+            onComplete({
+              newName,
+              newKeyword,
+              newCategoryCode,
+              newCategoryName,
+              newOrigin,
+            });
           }}
         >
           개선 완료
@@ -231,8 +342,8 @@ const AsideTitle = styled.div`
   }
   textarea {
     margin-left: 1vw;
-    height: 80px;
-    min-width: 180px;
+    height: 50px;
+    min-width: 170px;
   }
   ol {
     padding-left: 32px;
@@ -312,6 +423,72 @@ const ButtonContainer = styled.div`
     border-radius: 5px;
     background-color: snow;
     width: 70px;
+  }
+`;
+
+const TableRow = styled.div`
+  display: flex;
+  div {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-bottom: 1px solid black;
+    padding: 2px 0;
+    &:first-of-type {
+      flex: 2;
+    }
+    input {
+      margin: 0 40px 0 10px;
+    }
+  }
+  ${PopupTitle} {
+    font-size: 12px;
+    background-color: snow;
+    justify-content: center;
+  }
+`;
+
+const KeywordList = styled.div`
+  height: 300px;
+  border-bottom: 1px solid black;
+  overflow-y: auto;
+  ${TableRow} {
+    div:first-of-type {
+      justify-content: left;
+    }
+  }
+  span {
+    margin: 15px 15px;
+  }
+`;
+
+const Chosen = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const ChosenKeywords = styled.div`
+  max-width: 75%;
+  div:first-of-type {
+    font-weight: bold;
+  }
+  div:nth-of-type(2) {
+    font-size: 12px;
+  }
+`;
+
+const ChosenButtons = styled.div`
+  margin: 15px 15px 0 0;
+  button {
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: snow;
+    width: 50px;
+    &:first-of-type {
+      margin-right: 10px;
+    }
   }
 `;
 

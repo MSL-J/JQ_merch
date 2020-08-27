@@ -13,10 +13,18 @@ class Processing extends Component {
     super();
     this.state = {
       column: {
-        name: 5,
-        category: 8,
-        origin: 4,
-        keyword: 42,
+        name: 5, //Excel column F
+        categoryCode: 8, //Excel column I
+        categoryName: 81, //Excel column CD
+        origin: 4, //Excel column E
+        keyword: 42, //Excel column AQ
+      },
+      newColumn: {
+        name: 84, //Excel column CG ~ CK
+        categoryCode: 82, //Excel column CE
+        categoryName: 83, //Excel column CF
+        origin: 89, //Excel column CL
+        keyword: null, //Excel column
       },
       loading: true,
       raw: null,
@@ -241,7 +249,13 @@ class Processing extends Component {
       croppedImageUrl,
       croppedImageCoord,
     } = this.state;
-    const { name, keyword, category, origin } = this.state.column;
+    const {
+      name,
+      keyword,
+      categoryCode,
+      categoryName,
+      origin,
+    } = this.state.column;
 
     this.setState({
       uploading: true,
@@ -254,7 +268,8 @@ class Processing extends Component {
 
     mod.newName.length && (await (data[name] = mod.newName.join()));
     mod.newKeyword && (await (data[keyword] = mod.newKeyword));
-    mod.newCategory && (await (data[category] = mod.newCategory));
+    mod.newCategoryCode && (await (data[categoryCode] = mod.newCategoryCode));
+    mod.newCategoryName && (await (data[categoryName] = mod.newCategoryName));
     mod.newOrigin && (await (data[origin] = mod.newOrigin));
     data.push(ogDetailUrl);
 
@@ -371,16 +386,21 @@ class Processing extends Component {
         <Original>
           <OrigData>
             <Title>
-              (기존) 상품명 :<span>{data && data[5]}</span>
+              (기존) 상품명 :<span>{data && data[column.name]}</span>
             </Title>
             <Title>
-              (기존) 카테고리 : <span>{data && data[8]}</span>
+              (기존) 카테고리 코드 :
+              <span>{data && data[column.categoryCode]}</span>
             </Title>
             <Title>
-              (기존) 원산지 : <span>{data && data[4]}</span>
+              (기존) 카테고리명 :
+              <span>{data && data[column.categoryName]}</span>
             </Title>
             <Title>
-              (기존) 키워드 : <span>{data && data[42]}</span>
+              (기존) 원산지 : <span>{data && data[column.origin]}</span>
+            </Title>
+            <Title>
+              (기존) 키워드 : <span>{data && data[column.keyword]}</span>
             </Title>
           </OrigData>
           <Detail>
@@ -426,7 +446,8 @@ class Processing extends Component {
         </Original>
         <Modified
           ogName={data && data[column.name]}
-          ogCategory={data && data[column.category]}
+          ogCategoryCode={data && data[column.categoryCode]}
+          ogCategoryName={data && data[column.categoryName]}
           ogOrigin={data && data[column.origin]}
           ogKeyword={data && data[column.keyword]}
           onComplete={(mod) => this.onComplete(mod)}
