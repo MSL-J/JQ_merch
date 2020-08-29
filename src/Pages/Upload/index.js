@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import DropZone from "./components/dropZone";
 import * as XLSX from "xlsx";
-import Popup from "components/Popup";
 import localforage from "localforage";
+import CategoryPopup from "components/CategoryPopup";
 import styled from "styled-components";
 
 class Upload extends Component {
@@ -233,63 +233,24 @@ class Upload extends Component {
                 카테고리 선택하기
               </button>
               {popup && (
-                <Popup closed={() => this.close()} name="카테고리 검색">
-                  <PopupWrapper>
-                    <PopupTitle>저스트큐 카테고리</PopupTitle>
-                    <SearchBox>
-                      <span>
-                        {`카테고리명이나 카테고리 코드로 검색 가능합니다. (교차검색 가능, & = 'and', + = 'or')`}
-                      </span>
-                      <input
-                        placeholder="ex) 패션 + 77906"
-                        onChange={(e) => {
-                          this.findCategory(e);
-                        }}
-                        onKeyUp={(e) => {
-                          this.enterCategory(e);
-                        }}
-                      ></input>
-                      <button
-                        onClick={() => {
-                          this.search();
-                        }}
-                      >
-                        검색
-                      </button>
-                    </SearchBox>
-                    <ResultBox>
-                      {filteredCategory.length ? (
-                        filteredCategory.map((c) => {
-                          return (
-                            <div
-                              onClick={() => {
-                                this.select(c);
-                              }}
-                            >
-                              {c}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <p> 검색값을 입력해주세요</p>
-                      )}
-                    </ResultBox>
-                    <ButtonContainer>
-                      {selected ? (
-                        <div>{selected}</div>
-                      ) : (
-                        "카테고리를 선택해 주세요"
-                      )}
-                      <button
-                        onClick={() => {
-                          this.setCategory();
-                        }}
-                      >
-                        불러오기
-                      </button>
-                    </ButtonContainer>
-                  </PopupWrapper>
-                </Popup>
+                <CategoryPopup
+                  close={() => this.close()}
+                  findCategory={(e) => this.findCategory(e)}
+                  enterCategory={(e) => {
+                    this.enterCategory(e);
+                  }}
+                  search={() => {
+                    this.search();
+                  }}
+                  filteredCategory={filteredCategory}
+                  select={(c) => {
+                    this.select(c);
+                  }}
+                  selected={selected}
+                  setCategory={() => {
+                    this.setCategory();
+                  }}
+                />
               )}
               <button onClick={() => this.setRowNNext()}>업로드 하기</button>
             </UploadMethod>
@@ -359,71 +320,6 @@ const UploadMethod = styled.div`
     border-radius: 10px;
     font-size: 20px;
     color: steelblue;
-  }
-`;
-
-const PopupTitle = styled.div`
-  display: flex;
-  justify-content: center;
-  background-color: snow;
-  border-bottom: 1px solid black;
-  font-weight: bold;
-`;
-
-const PopupWrapper = styled.div`
-  height: 100%;
-  background-color: white;
-  button {
-    border: solid 1px lightgrey;
-  }
-`;
-
-const SearchBox = styled.div`
-  display: flex;
-  align-items: center;
-  height: 60px;
-  margin: 10px 40px 20px;
-  border-bottom: solid 1px lightgrey;
-  span {
-    font-size: 12px;
-    margin-right: 10px;
-  }
-  input {
-    width: 120px;
-    margin-right: 10px;
-    padding-left: 5px;
-  }
-  button {
-    min-width: 50px;
-  }
-`;
-
-const ResultBox = styled.div`
-  margin: 20px auto;
-  overflow: auto;
-  width: 500px;
-  height: 200px;
-  background-color: snow;
-  border: 1px solid lightgrey;
-  div {
-    cursor: pointer;
-    border-bottom: 1px solid lightgrey;
-    padding: 3px 0 3px 3px;
-  }
-  p {
-    margin: 5px 0 0 3px;
-  }
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin: 20px 30px;
-  padding-top: 10px;
-  border-top: solid 1px lightgrey;
-  button {
-    margin-left: 20px;
-    min-width: 80px;
   }
 `;
 

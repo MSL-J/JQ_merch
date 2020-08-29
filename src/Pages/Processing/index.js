@@ -255,7 +255,7 @@ class Processing extends Component {
       categoryCode,
       categoryName,
       origin,
-    } = this.state.column;
+    } = this.state.newColumn;
 
     this.setState({
       uploading: true,
@@ -266,8 +266,11 @@ class Processing extends Component {
       window.scrollTo(0, y);
     };
 
-    mod.newName.length && (await (data[name] = mod.newName.join()));
-    mod.newKeyword && (await (data[keyword] = mod.newKeyword));
+    mod.newName.length &&
+      (await mod.newName.forEach((name, idx) => {
+        data[name + idx] = name;
+      }));
+    mod.newSetKeywords.length && (await (data[keyword] = mod.newSetKeyword));
     mod.newCategoryCode && (await (data[categoryCode] = mod.newCategoryCode));
     mod.newCategoryName && (await (data[categoryName] = mod.newCategoryName));
     mod.newOrigin && (await (data[origin] = mod.newOrigin));
