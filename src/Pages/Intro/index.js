@@ -13,6 +13,27 @@ class Intro extends Component {
     localforage.clear();
   };
 
+  testFetch = () => {
+    fetch("http://localhost:4000/getNaverName", {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   render() {
     return (
       <IntroContainer>
@@ -26,7 +47,7 @@ class Intro extends Component {
             <button>로그인</button>
           </Link>
           <Link>
-            <button>회원가입</button>
+            <button onClick={() => this.testFetch()}>회원가입</button>
           </Link>
         </SignInUp>
       </IntroContainer>
