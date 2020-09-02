@@ -15,6 +15,9 @@ class Modified extends React.Component {
       name: false,
       keyword: false,
       category: false,
+      findNameInput: "",
+      foundRelName: [],
+      foundRecName: [],
       newNameInput: "",
       newName: [],
       newCategoryCode: null,
@@ -103,6 +106,49 @@ class Modified extends React.Component {
         })
       : alert("수정 상품명은 최대 5개까지 가능합니다");
     this.nameInput.value = "";
+  };
+
+  findNameInput = (e) => {
+    this.setState({
+      findNameInput: e.target.value,
+    });
+  };
+
+  enterFindNewName = (e) => {
+    e.key === "Enter" && this.findNewName();
+  };
+
+  findNewName = () => {
+    const { findNameInput } = this.state;
+    findNameInput
+      ? fetch(
+          `http://localhost:4000/getNaverName?searchWord=${findNameInput.trim()}`,
+          {
+            method: "GET",
+            mode: "cors",
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((res) => {
+            return res.json();
+          })
+          .then((res) => {
+            console.log(res);
+            this.setState({
+              foundRelName: res.rel,
+            });
+            this.setState({
+              foundRecName: res.rec,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+      : alert("검색단어를 입력해주세요");
   };
 
   chooseKeywords = (keyword) => {
@@ -244,6 +290,8 @@ class Modified extends React.Component {
       keyword,
       category,
       newName,
+      foundRelName,
+      foundRecName,
       newCategoryCode,
       filteredCategory,
       selectedCategory,
@@ -284,17 +332,29 @@ class Modified extends React.Component {
               <PopupWrapper>
                 <PopupTitle>검색단어</PopupTitle>
                 <InputField>
-                  <input></input>
-                  <button>검색</button>
+                  <input
+                    onChange={(e) => this.findNameInput(e)}
+                    onKeyUp={(e) => this.enterFindNewName(e)}
+                    placeholder="검색 단어를 한개씩 입력해주세요"
+                  ></input>
+                  <button onClick={() => this.findNewName()}>검색</button>
                 </InputField>
                 <Related>
                   <Row>
                     <div>쇼핑연관</div>
-                    <div></div>
+                    <div>
+                      {foundRelName.length
+                        ? foundRelName.join(", ")
+                        : "쇼핑연관 단어가 없습니다"}
+                    </div>
                   </Row>
                   <Row>
                     <div>키워드 추천</div>
-                    <div></div>
+                    <div>
+                      {foundRecName.length
+                        ? foundRecName.join(", ")
+                        : "추천 키워드가 없습니다"}
+                    </div>
                   </Row>
                 </Related>
                 <PopupTitle>제목입력</PopupTitle>
@@ -389,8 +449,8 @@ class Modified extends React.Component {
           <div>
             <textarea
               placeholder={ogKeyword}
-              onChange={(e) => this.changeValue(e, "Keyword")}
-              value={newSetKeywords.join(", ")}
+              onChange={(e) => this.changeValue(e, "SetKeywords")}
+              value={newSetKeywords}
             ></textarea>
           </div>
         </AsideTitle>
@@ -472,7 +532,7 @@ const AsideContainer = styled.aside`
   width: 33%;
   border: 1px solid steelblue;
   background-color: white;
-  padding: 1vh 3vw;
+  padding: 1vh 3vw 0;
 `;
 
 const AsideTitle = styled.div`
@@ -561,18 +621,18 @@ const Related = styled.div`
 const Row = styled.div`
   display: flex;
   border-bottom: 0.5px solid black;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 15px;
   &:first-of-type {
     border-top: 0.5px solid black;
   }
   div {
     padding: 7px;
     &:first-of-type {
-      width: 100px;
+      min-width: 100px;
       border-right: 0.5px solid black;
-      text-align: center;
       background-color: snow;
+      text-align: center;
+      font-weight: bold;
     }
     &:last-of-type {
       text-align: left;
@@ -627,6 +687,15 @@ const KeywordList = styled.div`
   }
   span {
     margin: 15px 15px;
+    @keyframes slidein {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+    animation: slidein 1s linear 0s infinite alternate;
   }
 `;
 

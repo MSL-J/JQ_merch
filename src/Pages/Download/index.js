@@ -24,20 +24,27 @@ class Download extends Component {
     });
   };
 
-  nextRow = () => {
-    localforage.setItem("row", this.state.row + 1, () => {
+  nextRow = async () => {
+    const { raw, row } = this.state;
+    await localforage.setItem("data", raw);
+    await localforage.setItem("row", row + 1, () => {
       this.props.history.push("/processing");
     });
+    // re-setting item as the user might choose to download and/or sent2server but still want to continue
   };
 
   download = async () => {
     const { raw } = this.state;
-
     const workBook = await XLSX.utils.book_new(); // create a new blank book
     const workSheet = await XLSX.utils.json_to_sheet(raw, { skipHeader: true });
-
     await XLSX.utils.book_append_sheet(workBook, workSheet, "data"); // add the worksheet to the book
     await XLSX.writeFile(workBook, "[수정본] 데이터.xlsx"); // initiate a file download in browser
+    await localforage.clear(); // delete locally saved data
+  };
+
+  send2Server = async () => {
+    //api
+    await localforage.clear(); // delete locally saved data
   };
 
   render() {
@@ -65,7 +72,13 @@ class Download extends Component {
           >
             그만하고 엑셀로 다운받기
           </button>
-          <button>그만하고 저스트큐 서버로 보내기</button>
+          <button
+            onClick={() => {
+              this.send2Server();
+            }}
+          >
+            그만하고 저스트큐 서버로 보내기
+          </button>
         </ButtonContainer>
       </DownloadContainer>
     );

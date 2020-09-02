@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { withRouter, Link } from "react-router-dom";
-import localforage from "localforage";
 import styled from "styled-components";
 
 class Intro extends Component {
@@ -8,31 +7,6 @@ class Intro extends Component {
     super();
     this.state = {};
   }
-
-  componentDidMount = () => {
-    localforage.clear();
-  };
-
-  testFetch = () => {
-    fetch("http://localhost:4000/getNaverName", {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   render() {
     return (
@@ -47,7 +21,7 @@ class Intro extends Component {
             <button>로그인</button>
           </Link>
           <Link>
-            <button onClick={() => this.testFetch()}>회원가입</button>
+            <button>회원가입</button>
           </Link>
         </SignInUp>
       </IntroContainer>

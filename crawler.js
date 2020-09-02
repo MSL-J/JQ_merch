@@ -36,7 +36,7 @@ app.get("/getNaverName", async (req, res) => {
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
     await page.goto(
-      "https://search.shopping.naver.com/search/all?query=비눗갑&frm=NVSHATC"
+      `https://search.shopping.naver.com/search/all?query=${req.query.searchWord}&frm=NVSHATC`
     );
     let rel = await page.$$eval(
       ".relatedTags_relation_srh__1CleC ul li a",
@@ -50,23 +50,19 @@ app.get("/getNaverName", async (req, res) => {
     console.log(rel);
 
     let rec = await page.evaluate(() => {
-      let findRec = [
-        ...document.querySelectorAll(".filter_finder_tit__2VCKd"),
-      ].map((el, idx) => {
-        if (el.innerText === "키워드추천") {
-          let recArr = [];
-          [
-            ...document
-              .querySelectorAll(".filter_finder_col__3ttPW")
-              [idx].querySelectorAll(".filter_text_over__3zD9c"),
-          ].map((el) => recArr.push(el.innerText));
-          return recArr;
-        } else return [];
-      });
-      return findRec;
-    });
-    rec.forEach((el) => {
-      if (el.length) rec = el;
+      return [...document.querySelectorAll(".filter_finder_tit__2VCKd")].reduce(
+        (res, el, idx) => {
+          if (el.innerText === "키워드추천") {
+            [
+              ...document
+                .querySelectorAll(".filter_finder_col__3ttPW")
+                [idx].querySelectorAll(".filter_text_over__3zD9c"),
+            ].map((el) => res.push(el.innerText));
+          }
+          return res;
+        },
+        []
+      );
     });
     console.log(rec);
 
@@ -81,5 +77,5 @@ app.get("/getNaverName", async (req, res) => {
 const server = http.createServer(app);
 
 server.listen(4000, () => {
-  console.log("서버 켜짐");
+  console.log("Server online!");
 });

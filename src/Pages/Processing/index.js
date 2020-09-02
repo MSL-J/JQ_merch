@@ -13,18 +13,21 @@ class Processing extends Component {
     super();
     this.state = {
       column: {
+        origin: 4, //Excel column E
         name: 5, //Excel column F
         categoryCode: 8, //Excel column I
-        categoryName: 81, //Excel column CD
-        origin: 4, //Excel column E
         keyword: 42, //Excel column AQ
+        categoryName: 81, //Excel column CD
       },
       newColumn: {
-        name: 84, //Excel column CG ~ CK
         categoryCode: 82, //Excel column CE
         categoryName: 83, //Excel column CF
-        origin: 89, //Excel column CL
-        keyword: null, //Excel column
+        keyword: 84, //Excel column CG
+        name: 85, //Excel column CH ~ CL
+        origin: 90, //Excel column CM
+        orgDetailUrl: 91, //Excel column CN
+        relCoord: 92, //Excel column CO
+        croppedImg: 93, //Excel column CP ~ CY
       },
       loading: true,
       raw: null,
@@ -171,18 +174,25 @@ class Processing extends Component {
   };
 
   onCropComplete = (crop) => {
+    const { croppedImageCoord, croppedImageUrl } = this.state;
     const { x, y, width, height } = crop;
     if (width) {
-      this.makeClientCrop(crop);
-      let cropCoord = `[[${x},${y}], [${x + width}, ${y}], [${x + width}, ${
-        y + height
-      }], [${x}, ${y + height}]]`;
-      let originalCoord = this.state.croppedImageCoord
-        ? this.state.croppedImageCoord + ", "
-        : "";
-      this.setState({
-        croppedImageCoord: originalCoord + cropCoord,
-      });
+      if (croppedImageUrl.length >= 10)
+        alert("이미지 크롭은 10개까지 가능합니다");
+      else {
+        this.makeClientCrop(crop);
+        let cropCoord = `[[${x},${y}], [${x + width}, ${y}], [${x + width}, ${
+          y + height
+        }], [${x}, ${y + height}]]`;
+        /* [[],[],[],[]] 
+        each arr represents each corner of the newly cropped image, starting from top left, rotating clock-wise
+        each arr has x and y coordinates relative to the top left corner of the whole detail image. */
+
+        let originalCoord = croppedImageCoord ? croppedImageCoord + ", " : "";
+        this.setState({
+          croppedImageCoord: originalCoord + cropCoord,
+        });
+      }
     }
   };
 
@@ -250,11 +260,14 @@ class Processing extends Component {
       croppedImageCoord,
     } = this.state;
     const {
-      name,
-      keyword,
       categoryCode,
       categoryName,
+      keyword,
+      name,
       origin,
+      orgDetailUrl,
+      relCoord,
+      croppedImg,
     } = this.state.newColumn;
 
     this.setState({
@@ -266,15 +279,16 @@ class Processing extends Component {
       window.scrollTo(0, y);
     };
 
+    mod.newCategoryCode && (data[categoryCode] = mod.newCategoryCode);
+    mod.newCategoryName && (data[categoryName] = mod.newCategoryName);
+    mod.newSetKeywords.length && (data[keyword] = mod.newSetKeyword);
     mod.newName.length &&
-      (await mod.newName.forEach((name, idx) => {
-        data[name + idx] = name;
+      (await mod.newName.forEach((el, idx) => {
+        data[name + idx] = el;
       }));
-    mod.newSetKeywords.length && (await (data[keyword] = mod.newSetKeyword));
-    mod.newCategoryCode && (await (data[categoryCode] = mod.newCategoryCode));
-    mod.newCategoryName && (await (data[categoryName] = mod.newCategoryName));
-    mod.newOrigin && (await (data[origin] = mod.newOrigin));
-    data.push(ogDetailUrl);
+    mod.newOrigin && (data[origin] = mod.newOrigin);
+    data[orgDetailUrl] = ogDetailUrl;
+    croppedImageCoord && (data[relCoord] = croppedImageCoord);
 
     let bucketName = "just-q-crop-img";
     let bucketRegion = "ap-northeast-2";
@@ -340,10 +354,13 @@ class Processing extends Component {
     urls.forEach((url) => {
       s3Url.push(url.Location);
     });
+    s3Url.length &&
+      s3Url.forEach((el, idx) => {
+        data[croppedImg + idx] = `${'"' + el + '"'}`;
+      });
 
-    s3Url.length && data.push(`${'"' + s3Url.join(`", "`) + '"'}`);
-    croppedImageCoord && data.push(croppedImageCoord);
     raw[row] = data;
+
     localforage.setItem("data", raw, () => {
       this.setState(
         {
