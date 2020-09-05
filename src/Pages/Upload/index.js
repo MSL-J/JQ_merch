@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 import localforage from "localforage";
 import CategoryPopup from "components/CategoryPopup";
 import { categoryAPI } from "services/apiService";
+import { repo } from "utils/deploy";
 import styled from "styled-components";
 
 class Upload extends Component {
@@ -79,7 +80,7 @@ class Upload extends Component {
           "row",
           this.state.row ? this.state.row : 1,
           () => {
-            this.props.history.push("/processing");
+            this.props.history.push(`${repo}/processing`);
           }
         )
       : alert("파일을 먼저 업로드 해주세요");

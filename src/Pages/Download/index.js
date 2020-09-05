@@ -4,6 +4,7 @@ import { WhichRow } from "../Processing";
 import * as XLSX from "xlsx";
 import localforage from "localforage";
 import { send2ServerAPI } from "services/apiService";
+import { repo } from "utils/deploy";
 import styled from "styled-components";
 
 class Download extends Component {
@@ -29,7 +30,7 @@ class Download extends Component {
     const { raw, row } = this.state;
     await localforage.setItem("data", raw);
     await localforage.setItem("row", row + 1, () => {
-      this.props.history.push("/processing");
+      this.props.history.push(`${repo}/processing`);
     });
     // re-setting item as the user might choose to download and/or sent2server but still want to continue
   };

@@ -12,6 +12,7 @@ import Upload from "pages/Upload";
 import Processing from "pages/Processing";
 import Download from "pages/Download";
 import Footer from "components/Footer";
+import { repo } from "utils/deploy";
 
 class Routes extends React.Component {
   render() {
@@ -19,12 +20,12 @@ class Routes extends React.Component {
       <Router>
         <Nav />
         <Switch>
-          <Route exact path="/" component={Intro} />
-          <Route exact path="/signup" component={Signup} />
-          <Route exact path="/upload" component={Upload} />
-          <Route exact path="/processing" component={Processing} />
-          <Route exact path="/download" component={Download} />
-          <Redirect from="*" to="/" />
+          <Route exact path={repo} component={Intro} />
+          <Route exact path={`${repo}/signup`} component={Signup} />
+          <Route exact path={`${repo}/upload`} component={Upload} />
+          <Route exact path={`${repo}/processing`} component={Processing} />
+          <Route exact path={`${repo}/download`} component={Download} />
+          <Redirect from="*" to={repo} />
         </Switch>
         <Footer />
       </Router>

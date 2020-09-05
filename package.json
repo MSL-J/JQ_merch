@@ -1,5 +1,5 @@
 {
-  "homepage": "http://MSL-J.github.io/JQ_merch",
+  "homepage": "https://MSL-J.github.io/JQ_merch",
   "name": "cra-boilerplate",
   "version": "0.1.0",
   "private": true,
@@ -40,7 +40,7 @@
     "client": "npm run start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -b master -d build"
   },
   "eslintConfig": {
     "extends": "react-app"

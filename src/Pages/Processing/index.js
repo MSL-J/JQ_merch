@@ -5,6 +5,7 @@ import htmlToImage from "html-to-image";
 import ReactCrop from "react-image-crop";
 import localforage from "localforage";
 import AWS from "aws-sdk";
+import { repo } from "utils/deploy";
 import "react-image-crop/dist/ReactCrop.css";
 import styled from "styled-components";
 
@@ -367,7 +368,7 @@ class Processing extends Component {
           uploading: false,
         },
         () => {
-          this.props.history.push("/download");
+          this.props.history.push(`${repo}/download`);
         }
       );
     });

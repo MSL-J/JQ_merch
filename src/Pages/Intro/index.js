@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter, Link } from "react-router-dom";
+import { repo } from "utils/deploy";
 import styled from "styled-components";
 
 class Intro extends Component {
@@ -17,7 +18,7 @@ class Intro extends Component {
           Just Q에서 개발한 상품가공 시스템의 prototype입니다.
         </ProjDesc>
         <SignInUp>
-          <Link to={`/upload`}>
+          <Link to={`${repo}/upload`}>
             <button>로그인</button>
           </Link>
           <Link>
