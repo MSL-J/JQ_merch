@@ -4,6 +4,7 @@ import DropZone from "./components/dropZone";
 import * as XLSX from "xlsx";
 import localforage from "localforage";
 import CategoryPopup from "components/CategoryPopup";
+import { categoryAPI } from "services/apiService";
 import styled from "styled-components";
 
 class Upload extends Component {
@@ -187,12 +188,16 @@ class Upload extends Component {
   };
 
   setCategory = () => {
-    this.close();
-
-    this.setState({
-      chosen: this.state.selected,
-    });
-    // here is where you fetch data of the chosen category, as a callback of the setState above
+    const { selected, category } = this.state;
+    selected &&
+      this.setState(
+        {
+          chosen: selected,
+        },
+        () => {
+          categoryAPI(selected, category, this.close);
+        }
+      );
   };
 
   render() {

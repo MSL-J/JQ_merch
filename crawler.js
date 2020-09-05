@@ -47,24 +47,24 @@ app.get("/getNaverName", async (req, res) => {
         return relArr;
       }
     );
-    console.log(rel);
+    console.log("rel", rel);
 
-    let rec = await page.evaluate(() => {
-      return [...document.querySelectorAll(".filter_finder_tit__2VCKd")].reduce(
-        (res, el, idx) => {
-          if (el.innerText === "키워드추천") {
-            [
-              ...document
-                .querySelectorAll(".filter_finder_col__3ttPW")
-                [idx].querySelectorAll(".filter_text_over__3zD9c"),
-            ].map((el) => res.push(el.innerText));
-          }
-          return res;
-        },
-        []
-      );
+    let rec = await page.$$eval(".filter_finder_tit__2VCKd", (elArr) => {
+      return elArr.reduce((res, el, idx) => {
+        if (
+          el.innerText === "키워드추천" ||
+          el.innerText === "키워드추천\n더보기"
+        ) {
+          [
+            ...document
+              .querySelectorAll(".filter_finder_col__3ttPW")
+              [idx].querySelectorAll(".filter_text_over__3zD9c"),
+          ].map((el) => res.push(el.innerText));
+        }
+        return res;
+      }, []);
     });
-    console.log(rec);
+    console.log("rec", rec);
 
     res.json({ rel, rec });
   } catch (err) {

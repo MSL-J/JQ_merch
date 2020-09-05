@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 import { WhichRow } from "../Processing";
 import * as XLSX from "xlsx";
 import localforage from "localforage";
+import { send2ServerAPI } from "services/apiService";
 import styled from "styled-components";
 
 class Download extends Component {
@@ -35,15 +36,10 @@ class Download extends Component {
 
   download = async () => {
     const { raw } = this.state;
-    const workBook = await XLSX.utils.book_new(); // create a new blank book
-    const workSheet = await XLSX.utils.json_to_sheet(raw, { skipHeader: true });
+    const workBook = XLSX.utils.book_new(); // create a new blank book
+    const workSheet = XLSX.utils.json_to_sheet(raw, { skipHeader: true });
     await XLSX.utils.book_append_sheet(workBook, workSheet, "data"); // add the worksheet to the book
     await XLSX.writeFile(workBook, "[수정본] 데이터.xlsx"); // initiate a file download in browser
-    await localforage.clear(); // delete locally saved data
-  };
-
-  send2Server = async () => {
-    //api
     await localforage.clear(); // delete locally saved data
   };
 
@@ -74,7 +70,7 @@ class Download extends Component {
           </button>
           <button
             onClick={() => {
-              this.send2Server();
+              send2ServerAPI();
             }}
           >
             그만하고 저스트큐 서버로 보내기
