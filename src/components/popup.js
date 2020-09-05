@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
+import { repo } from "utils/deploy";
 
 class Popup extends React.Component {
   constructor(props) {
@@ -13,7 +14,7 @@ class Popup extends React.Component {
   componentDidMount() {
     // STEP 3: open a new browser window and store a reference to it
     this.externalWindow = window.open(
-      "",
+      ``,
       "",
       "width=600,height=400,left=200,top=200"
     );
