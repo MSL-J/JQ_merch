@@ -47,7 +47,7 @@ const IntroContainer = styled.div`
 const LogoContainer = styled.div`
   width: 200px;
   height: 200px;
-  background-image: url("http://www.aitimes.com/news/photo/201910/120047_115127_4113.png");
+  background-image: url("https://www.aitimes.com/news/photo/201910/120047_115127_4113.png");
   background-size: contain;
   background-repeat: no-repeat;
 `;
