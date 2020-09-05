@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import Popup from "components/Popup";
+import "./categoryPopup.css";
 import styled from "styled-components";
 
 class CategoryPopup extends Component {
@@ -33,6 +34,7 @@ class CategoryPopup extends Component {
               }}
             ></input>
             <button
+              className="button"
               onClick={() => {
                 search();
               }}
