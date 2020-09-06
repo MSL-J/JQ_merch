@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter, Link } from "react-router-dom";
-import { repo } from "utils/deploy";
+import { repo } from "utils/production";
 import styled from "styled-components";
 
 class Intro extends Component {

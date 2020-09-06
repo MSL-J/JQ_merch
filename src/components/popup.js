@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
-import { repo } from "utils/deploy";
+import { githubUser } from "utils/production";
 
 class Popup extends React.Component {
   constructor(props) {
@@ -25,10 +25,13 @@ class Popup extends React.Component {
 
     // Applying(appending) styles to all new windows
     function copyStyles(sourceDoc, targetDoc) {
-      Array.from(
-        sourceDoc.querySelectorAll('link[rel="stylesheet"], style')
-      ).forEach((link) => {
-        console.log(link.innerHTML);
+      Array.from(sourceDoc.querySelectorAll('link[rel="stylesheet"]')).forEach(
+        (link) => {
+          link.href = `https://` + githubUser + link.href;
+          targetDoc.head.appendChild(link.cloneNode(true));
+        }
+      );
+      Array.from(sourceDoc.querySelectorAll("style")).forEach((link) => {
         targetDoc.head.appendChild(link.cloneNode(true));
       });
     }

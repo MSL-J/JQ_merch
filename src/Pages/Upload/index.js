@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 import localforage from "localforage";
 import CategoryPopup from "components/CategoryPopup";
 import { categoryAPI } from "services/apiService";
-import { repo } from "utils/deploy";
+import { repo } from "utils/production";
 import styled from "styled-components";
 
 class Upload extends Component {

@@ -4,7 +4,7 @@ import { WhichRow } from "../Processing";
 import * as XLSX from "xlsx";
 import localforage from "localforage";
 import { send2ServerAPI } from "services/apiService";
-import { repo } from "utils/deploy";
+import { repo } from "utils/production";
 import styled from "styled-components";
 
 class Download extends Component {

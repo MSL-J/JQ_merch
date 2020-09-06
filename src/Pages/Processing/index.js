@@ -5,7 +5,7 @@ import htmlToImage from "html-to-image";
 import ReactCrop from "react-image-crop";
 import localforage from "localforage";
 import AWS from "aws-sdk";
-import { repo } from "utils/deploy";
+import { repo } from "utils/production";
 import "react-image-crop/dist/ReactCrop.css";
 import styled from "styled-components";
 

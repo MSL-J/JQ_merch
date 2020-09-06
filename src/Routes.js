@@ -12,7 +12,7 @@ import Upload from "pages/Upload";
 import Processing from "pages/Processing";
 import Download from "pages/Download";
 import Footer from "components/Footer";
-import { repo } from "utils/deploy";
+import { repo } from "utils/production";
 
 class Routes extends React.Component {
   render() {

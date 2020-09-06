@@ -1,6 +1,60 @@
-.searchBox {
-  border: black 1px solid;
+.popupWrapper {
+  height: 100%;
+  background-color: white;
   button {
-    width: 200px;
+    border: solid 1px lightgrey;
+  }
+  .popupTitle {
+    display: flex;
+    justify-content: center;
+    background-color: snow;
+    border-bottom: 1px solid black;
+    font-weight: bold;
+  }
+  .searchBox {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    margin: 10px 40px 20px;
+    border-bottom: solid 1px lightgrey;
+    span {
+      font-size: 12px;
+      margin-right: 10px;
+    }
+    input {
+      width: 120px;
+      margin-right: 10px;
+      padding-left: 5px;
+    }
+    button {
+      min-width: 50px;
+    }
+  }
+  .resultBox {
+    margin: 20px auto;
+    overflow: auto;
+    width: 500px;
+    height: 200px;
+    background-color: snow;
+    border: 1px solid lightgrey;
+    div {
+      cursor: pointer;
+      border-bottom: 1px solid lightgrey;
+      padding: 3px 0 3px 3px;
+    }
+    p {
+      margin: 5px 0 0 3px;
+    }
+  }
+  .buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 30px;
+    padding-top: 10px;
+    border-top: solid 1px lightgrey;
+    button {
+      margin-left: 20px;
+      min-width: 80px;
+    }
   }
 }
