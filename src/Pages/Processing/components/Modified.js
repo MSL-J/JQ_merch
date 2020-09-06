@@ -74,7 +74,6 @@ class Modified extends React.Component {
     });
     popup === "keyword" && !newSetKeywords.length
       ? keywordsAPI(ogKeyword).then((res) => {
-          console.log(res);
           this.setState({
             fetchedKeywords: res,
             chosenKeywords: newSetKeywords,
@@ -137,7 +136,6 @@ class Modified extends React.Component {
             return res.json();
           })
           .then((res) => {
-            console.log(res);
             this.setState({
               foundRelName: res.rel,
             });

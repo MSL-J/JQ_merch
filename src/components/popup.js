@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
-import { githubUser } from "utils/production";
 
 class Popup extends React.Component {
   constructor(props) {

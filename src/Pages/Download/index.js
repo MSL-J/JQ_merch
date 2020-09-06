@@ -44,13 +44,10 @@ class Download extends Component {
     raw[0][101] = "(URL)추출한_이미지9";
     raw[0][102] = "(URL)추출한_이미지10";
 
-    await this.setState(
-      {
-        raw,
-        row,
-      },
-      () => console.log(this.state.raw)
-    );
+    await this.setState({
+      raw,
+      row,
+    });
   };
 
   nextRow = async () => {
