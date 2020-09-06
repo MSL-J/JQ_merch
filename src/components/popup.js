@@ -28,7 +28,7 @@ class Popup extends React.Component {
       Array.from(sourceDoc.querySelectorAll('link[rel="stylesheet"]')).forEach(
         (link) => {
           let newLink = link;
-          newLink.href = `https://` + githubUser + newLink.href;
+          newLink.href = githubUser + newLink.href;
           targetDoc.head.appendChild(newLink.cloneNode(true));
         }
       );
