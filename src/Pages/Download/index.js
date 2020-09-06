@@ -20,10 +20,37 @@ class Download extends Component {
     const raw = await localforage.getItem("data");
     const row = await localforage.getItem("row");
 
-    await this.setState({
-      raw,
-      row,
-    });
+    //Headers for newly added columns:
+    raw[0][81] = "기존카테고리명";
+    raw[0][82] = "신규카테고리코드 ";
+    raw[0][83] = "신규카테고리명";
+    raw[0][84] = "신규키워드";
+    raw[0][85] = "신규상품명1";
+    raw[0][86] = "신규상품명2";
+    raw[0][87] = "신규상품명3";
+    raw[0][88] = "신규상품명4";
+    raw[0][89] = "신규상품명5";
+    raw[0][90] = "신규원산지";
+    raw[0][91] = "(URL)상세이미지";
+    raw[0][92] = "추출한_이미지들의_상대좌표들";
+    raw[0][93] = "(URL)추출한_이미지1";
+    raw[0][94] = "(URL)추출한_이미지2";
+    raw[0][95] = "(URL)추출한_이미지3";
+    raw[0][96] = "(URL)추출한_이미지4";
+    raw[0][97] = "(URL)추출한_이미지5";
+    raw[0][98] = "(URL)추출한_이미지6";
+    raw[0][99] = "(URL)추출한_이미지7";
+    raw[0][100] = "(URL)추출한_이미지8";
+    raw[0][101] = "(URL)추출한_이미지9";
+    raw[0][102] = "(URL)추출한_이미지10";
+
+    await this.setState(
+      {
+        raw,
+        row,
+      },
+      () => console.log(this.state.raw)
+    );
   };
 
   nextRow = async () => {

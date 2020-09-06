@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import Popup from "components/Popup";
-import "./categoryPopup.css";
+import "./categoryPopup.scss";
 import styled from "styled-components";
 
 class CategoryPopup extends Component {
@@ -20,7 +20,7 @@ class CategoryPopup extends Component {
       <Popup closed={() => close()} name="카테고리 검색">
         <PopupWrapper>
           <PopupTitle>저스트큐 카테고리</PopupTitle>
-          <SearchBox>
+          <SearchBox className="searchBox">
             <span>
               {`카테고리명이나 카테고리 코드로 검색 가능합니다. (교차검색 가능, & = 'and', + = 'or')`}
             </span>
@@ -34,7 +34,6 @@ class CategoryPopup extends Component {
               }}
             ></input>
             <button
-              className="button"
               onClick={() => {
                 search();
               }}
