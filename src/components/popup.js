@@ -27,9 +27,7 @@ class Popup extends React.Component {
     function copyStyles(sourceDoc, targetDoc) {
       Array.from(sourceDoc.querySelectorAll('link[rel="stylesheet"]')).forEach(
         (link) => {
-          let newLink = link;
-          newLink.href = `https://` + githubUser + newLink.href;
-          targetDoc.head.appendChild(newLink.cloneNode(true));
+          targetDoc.head.appendChild(link.cloneNode(true));
         }
       );
       Array.from(sourceDoc.querySelectorAll("style")).forEach((link) => {
