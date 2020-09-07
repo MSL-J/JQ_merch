@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import localforage from "localforage";
-import { justQAPi } from "utils/api";
+import { justQAPi, crawlingAPI } from "utils/api";
 
 export function categoryAPI(selected, category, callBack) {
   let fetchCateNum = category.map((el) => el[1])[
@@ -79,4 +79,20 @@ export function send2ServerAPI() {
       alert("데이터를 서버에 저장하는데 실패했습니다: ", err);
       console.log("posting data rejected: ", err);
     });
+}
+
+export function nameCrawlingApi(input) {
+  return new Promise((resolve, reject) => {
+    fetch(`${crawlingAPI}getNaverName?searchWord=${input.trim()}`, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      resolve(res.json());
+    });
+  });
 }
