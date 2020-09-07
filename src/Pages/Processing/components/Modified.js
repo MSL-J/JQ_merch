@@ -4,7 +4,6 @@ import Popup from "components/Popup";
 import * as XLSX from "xlsx";
 import { keywordsAPI, nameCrawlingApi } from "../../../services/apiService";
 import CategoryPopup from "components/CategoryPopup";
-import { crawlingAPI } from "utils/api";
 import "./namePopup.scss";
 import "./keywordPopup.scss";
 import styled from "styled-components";
