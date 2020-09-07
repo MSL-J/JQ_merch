@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import localforage from "localforage";
-
-export const justQAPi = "http://xxx.xxx.x.x:xxxx/";
+import { justQAPi } from "utils/api";
 
 export function categoryAPI(selected, category, callBack) {
   let fetchCateNum = category.map((el) => el[1])[

@@ -4,6 +4,9 @@ import Popup from "components/Popup";
 import * as XLSX from "xlsx";
 import { keywordsAPI } from "../../../services/apiService";
 import CategoryPopup from "components/CategoryPopup";
+import { crawlingAPI } from "utils/api";
+import "./namePopup.scss";
+import "./keywordPopup.scss";
 import styled from "styled-components";
 
 class Modified extends React.Component {
@@ -120,18 +123,15 @@ class Modified extends React.Component {
   findNewName = () => {
     const { findNameInput } = this.state;
     findNameInput
-      ? fetch(
-          `http://localhost:4000/getNaverName?searchWord=${findNameInput.trim()}`,
-          {
-            method: "GET",
-            mode: "cors",
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          }
-        )
+      ? fetch(`${crawlingAPI}getNaverName?searchWord=${findNameInput.trim()}`, {
+          method: "GET",
+          mode: "cors",
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        })
           .then((res) => {
             return res.json();
           })
@@ -327,36 +327,36 @@ class Modified extends React.Component {
 
           {name && (
             <Popup closed={() => this.close("name")} name="상품명 추천">
-              <PopupWrapper>
-                <PopupTitle>검색단어</PopupTitle>
-                <InputField>
+              <div className="nameNKeywordPopup">
+                <div className="popupTitle">검색단어</div>
+                <div className="inputField">
                   <input
                     onChange={(e) => this.findNameInput(e)}
                     onKeyUp={(e) => this.enterFindNewName(e)}
                     placeholder="검색 단어를 한개씩 입력해주세요"
                   ></input>
                   <button onClick={() => this.findNewName()}>검색</button>
-                </InputField>
-                <Related>
-                  <Row>
+                </div>
+                <div className="related">
+                  <div className="row">
                     <div>쇼핑연관</div>
                     <div>
                       {foundRelName.length
                         ? foundRelName.join(", ")
                         : "쇼핑연관 단어가 없습니다"}
                     </div>
-                  </Row>
-                  <Row>
+                  </div>
+                  <div className="row">
                     <div>키워드 추천</div>
                     <div>
                       {foundRecName.length
                         ? foundRecName.join(", ")
                         : "추천 키워드가 없습니다"}
                     </div>
-                  </Row>
-                </Related>
-                <PopupTitle>제목입력</PopupTitle>
-                <InputField>
+                  </div>
+                </div>
+                <div className="popupTitle">제목입력</div>
+                <div className="inputField">
                   <div>
                     <input
                       ref={(ref) => (this.nameInput = ref)}
@@ -366,11 +366,11 @@ class Modified extends React.Component {
                     <div>(상품명을 한개씩 입력해주세요)</div>
                   </div>
                   <button onClick={() => this.setNewName()}>입력</button>
-                </InputField>
-                <ButtonContainer>
+                </div>
+                <div className="buttonContainer">
                   <button onClick={() => this.close("name")}>닫기</button>
-                </ButtonContainer>
-              </PopupWrapper>
+                </div>
+              </div>
             </Popup>
           )}
           {newName.length ? (
@@ -396,20 +396,20 @@ class Modified extends React.Component {
           </div>
           {keyword && (
             <Popup closed={() => this.close("keyword")} name="키워드 추천">
-              <PopupWrapper>
-                <PopupTitle>
+              <div className="nameNKeywordPopup">
+                <div className="popupTitle">
                   키워드 추천 (타 브랜드/효과/효능/과장 단어 주의)
-                </PopupTitle>
-                <TableRow>
-                  <PopupTitle>키워드</PopupTitle>
-                  <PopupTitle>모바일 월 평균 클릭 수</PopupTitle>
-                  <PopupTitle>PC 월 평균 클릭 수</PopupTitle>
-                </TableRow>
-                <KeywordList>
+                </div>
+                <div className="tableRow">
+                  <div className="popupTitle">키워드</div>
+                  <div className="popupTitle">모바일 월 평균 클릭 수</div>
+                  <div className="popupTitle">PC 월 평균 클릭 수</div>
+                </div>
+                <div className="keywordList">
                   {fetchedKeywords.length ? (
                     fetchedKeywords.map((keyword, idx) => {
                       return (
-                        <TableRow>
+                        <div className="tableRow">
                           <div>
                             <input
                               type="checkbox"
@@ -424,24 +424,24 @@ class Modified extends React.Component {
                           </div>
                           <div>{keyword.monthlyAveMobileClkCnt}</div>
                           <div>{keyword.monthlyAvePcClkCnt}</div>
-                        </TableRow>
+                        </div>
                       );
                     })
                   ) : (
                     <span>추천 키워드를 받아오고 있습니다.</span>
                   )}
-                </KeywordList>
-                <Chosen>
-                  <ChosenKeywords>
+                </div>
+                <div className="chosen">
+                  <div className="chosenKeywords">
                     <div>선택한 키워드</div>
                     <div>{chosenKeywords.join(", ")}</div>
-                  </ChosenKeywords>
-                  <ChosenButtons>
+                  </div>
+                  <div className="chosenButtons">
                     <button onClick={() => this.setNewKeywords()}>입력</button>
                     <button onClick={() => this.close("keyword")}>닫기</button>
-                  </ChosenButtons>
-                </Chosen>
-              </PopupWrapper>
+                  </div>
+                </div>
+              </div>
             </Popup>
           )}
           <div>
@@ -574,156 +574,156 @@ const AsideTitle = styled.div`
   }
 `;
 
-const PopupWrapper = styled.div`
-  height: 100%;
-  background-color: white;
-`;
+// const PopupWrapper = styled.div`
+//   height: 100%;
+//   background-color: white;
+// `;
 
-const PopupTitle = styled.div`
-  display: flex;
-  justify-content: center;
-  background-color: snow;
-  border-bottom: 1px solid black;
-  font-weight: bold;
-`;
+// const PopupTitle = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   background-color: snow;
+//   border-bottom: 1px solid black;
+//   font-weight: bold;
+// `;
 
-const InputField = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  padding: 15px 0;
-  border-bottom: 1px solid black;
-  input {
-    width: 70%;
-    padding-left: 5px;
-  }
-  button {
-    border: 1px solid black;
-    border-radius: 5px;
-    height: 23px;
-  }
-  div:first-of-type {
-    display: flex;
-    flex-direction: column;
-    width: 70%;
-    input {
-      width: 100%;
-    }
-  }
-`;
+// const InputField = styled.div`
+//   display: flex;
+//   justify-content: space-evenly;
+//   padding: 15px 0;
+//   border-bottom: 1px solid black;
+//   input {
+//     width: 70%;
+//     padding-left: 5px;
+//   }
+//   button {
+//     border: 1px solid black;
+//     border-radius: 5px;
+//     height: 23px;
+//   }
+//   div:first-of-type {
+//     display: flex;
+//     flex-direction: column;
+//     width: 70%;
+//     input {
+//       width: 100%;
+//     }
+//   }
+// `;
 
-const Related = styled.div`
-  padding: 20px 0;
-  border-bottom: 1px solid black;
-`;
+// const Related = styled.div`
+//   padding: 20px 0;
+//   border-bottom: 1px solid black;
+// `;
 
-const Row = styled.div`
-  display: flex;
-  border-bottom: 0.5px solid black;
-  font-size: 15px;
-  &:first-of-type {
-    border-top: 0.5px solid black;
-  }
-  div {
-    padding: 7px;
-    &:first-of-type {
-      min-width: 100px;
-      border-right: 0.5px solid black;
-      background-color: snow;
-      text-align: center;
-      font-weight: bold;
-    }
-    &:last-of-type {
-      text-align: left;
-    }
-  }
-`;
+// const Row = styled.div`
+//   display: flex;
+//   border-bottom: 0.5px solid black;
+//   font-size: 15px;
+//   &:first-of-type {
+//     border-top: 0.5px solid black;
+//   }
+//   div {
+//     padding: 7px;
+//     &:first-of-type {
+//       min-width: 100px;
+//       border-right: 0.5px solid black;
+//       background-color: snow;
+//       text-align: center;
+//       font-weight: bold;
+//     }
+//     &:last-of-type {
+//       text-align: left;
+//     }
+//   }
+// `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-  button {
-    border: 1px solid black;
-    border-radius: 5px;
-    background-color: snow;
-    width: 70px;
-  }
-`;
+// const ButtonContainer = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   margin-top: 30px;
+//   button {
+//     border: 1px solid black;
+//     border-radius: 5px;
+//     background-color: snow;
+//     width: 70px;
+//   }
+// `;
 
-const TableRow = styled.div`
-  display: flex;
-  div {
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    background-color: white;
-    border-bottom: 1px solid black;
-    padding: 2px 0;
-    &:first-of-type {
-      flex: 2;
-    }
-    input {
-      margin: 0 40px 0 10px;
-    }
-  }
-  ${PopupTitle} {
-    font-size: 12px;
-    background-color: snow;
-    justify-content: center;
-  }
-`;
+// const TableRow = styled.div`
+//   display: flex;
+//   div {
+//     display: flex;
+//     flex: 1;
+//     justify-content: center;
+//     align-items: center;
+//     background-color: white;
+//     border-bottom: 1px solid black;
+//     padding: 2px 0;
+//     &:first-of-type {
+//       flex: 2;
+//     }
+//     input {
+//       margin: 0 40px 0 10px;
+//     }
+//   }
+//   ${PopupTitle} {
+//     font-size: 12px;
+//     background-color: snow;
+//     justify-content: center;
+//   }
+// `;
 
-const KeywordList = styled.div`
-  height: 300px;
-  border-bottom: 1px solid black;
-  overflow-y: auto;
-  ${TableRow} {
-    div:first-of-type {
-      justify-content: left;
-    }
-  }
-  span {
-    margin: 15px 15px;
-    @keyframes slidein {
-      from {
-        opacity: 1;
-      }
-      to {
-        opacity: 0;
-      }
-    }
-    animation: slidein 1s linear 0s infinite alternate;
-  }
-`;
+// const KeywordList = styled.div`
+//   height: 300px;
+//   border-bottom: 1px solid black;
+//   overflow-y: auto;
+//   ${TableRow} {
+//     div:first-of-type {
+//       justify-content: left;
+//     }
+//   }
+//   span {
+//     margin: 15px 15px;
+//     @keyframes slidein {
+//       from {
+//         opacity: 1;
+//       }
+//       to {
+//         opacity: 0;
+//       }
+//     }
+//     animation: slidein 1s linear 0s infinite alternate;
+//   }
+// `;
 
-const Chosen = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
+// const Chosen = styled.div`
+//   display: flex;
+//   justify-content: space-between;
+// `;
 
-const ChosenKeywords = styled.div`
-  max-width: 75%;
-  div:first-of-type {
-    font-weight: bold;
-  }
-  div:nth-of-type(2) {
-    font-size: 12px;
-  }
-`;
+// const ChosenKeywords = styled.div`
+//   max-width: 75%;
+//   div:first-of-type {
+//     font-weight: bold;
+//   }
+//   div:nth-of-type(2) {
+//     font-size: 12px;
+//   }
+// `;
 
-const ChosenButtons = styled.div`
-  margin: 15px 15px 0 0;
-  button {
-    border: 1px solid black;
-    border-radius: 5px;
-    background-color: snow;
-    width: 50px;
-    &:first-of-type {
-      margin-right: 10px;
-    }
-  }
-`;
+// const ChosenButtons = styled.div`
+//   margin: 15px 15px 0 0;
+//   button {
+//     border: 1px solid black;
+//     border-radius: 5px;
+//     background-color: snow;
+//     width: 50px;
+//     &:first-of-type {
+//       margin-right: 10px;
+//     }
+//   }
+// `;
 
 const ModComplete = styled.button`
   width: 100px;

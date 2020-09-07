@@ -17,7 +17,7 @@ class CategoryPopup extends Component {
     } = this.props;
     return (
       <Popup closed={() => close()} name="카테고리 검색">
-        <div className="popupWrapper">
+        <div className="categoryPopup">
           <div className="popupTitle">저스트큐 카테고리</div>
           <div className="searchBox">
             <span>

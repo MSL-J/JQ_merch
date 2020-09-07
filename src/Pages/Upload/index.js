@@ -73,19 +73,6 @@ class Upload extends Component {
       : alert("1 이상의 숫자를 입력해 주세요");
   };
 
-  setRowNNext = async () => {
-    let data = await localforage.getItem("data");
-    data
-      ? await localforage.setItem(
-          "row",
-          this.state.row ? this.state.row : 1,
-          () => {
-            this.props.history.push(`${repo}/processing`);
-          }
-        )
-      : alert("파일을 먼저 업로드 해주세요");
-  };
-
   findCategory = (e, search) => {
     this.setState(
       {
@@ -199,6 +186,19 @@ class Upload extends Component {
           categoryAPI(selected, category, this.close);
         }
       );
+  };
+
+  setRowNNext = async () => {
+    let data = await localforage.getItem("data");
+    data
+      ? await localforage.setItem(
+          "row",
+          this.state.row ? this.state.row : 1,
+          () => {
+            this.props.history.push(`${repo}/processing`);
+          }
+        )
+      : alert("파일을 먼저 업로드 해주세요");
   };
 
   render() {
