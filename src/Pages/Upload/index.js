@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import DropZone from "./components/dropZone";
-import * as XLSX from "xlsx";
 import localforage from "localforage";
 import CategoryPopup from "components/CategoryPopup";
-import { categoryAPI } from "services/apiService";
+import { categoryAPI, justQCategoryXLSX } from "services/apiService";
 import { repo } from "utils/production";
 import styled from "styled-components";
 
@@ -31,20 +30,11 @@ class Upload extends Component {
       });
     }, 1000);
 
-    fetch("Category.xlsx")
-      .then((res) => res.arrayBuffer())
-      .then((res) => {
-        let file = XLSX.read(res, { type: "array" });
-        const workbook = file.Sheets[file.SheetNames[0]];
-        const category = XLSX.utils.sheet_to_json(workbook, { header: 1 });
-        category.shift();
-        return category;
-      })
-      .then((category) => {
-        this.setState({
-          category,
-        });
+    justQCategoryXLSX().then((category) => {
+      this.setState({
+        category,
       });
+    });
     window.addEventListener("beforeunload", () => {
       this.close();
     });

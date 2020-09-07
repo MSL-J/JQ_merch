@@ -1,8 +1,11 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import Popup from "components/Popup";
-import * as XLSX from "xlsx";
-import { keywordsAPI, nameCrawlingApi } from "../../../services/apiService";
+import {
+  keywordsAPI,
+  nameCrawlingApi,
+  justQCategoryXLSX,
+} from "../../../services/apiService";
 import CategoryPopup from "components/CategoryPopup";
 import "./namePopup.scss";
 import "./keywordPopup.scss";
@@ -46,20 +49,11 @@ class Modified extends React.Component {
       });
     }, 1000);
 
-    fetch("Category.xlsx")
-      .then((res) => res.arrayBuffer())
-      .then((res) => {
-        let file = XLSX.read(res, { type: "array" });
-        const workbook = file.Sheets[file.SheetNames[0]];
-        const categoryList = XLSX.utils.sheet_to_json(workbook, { header: 1 });
-        categoryList.shift();
-        return categoryList;
-      })
-      .then((categoryList) => {
-        this.setState({
-          categoryList,
-        });
+    justQCategoryXLSX().then((categoryList) => {
+      this.setState({
+        categoryList,
       });
+    });
   };
 
   close = (popup) => {

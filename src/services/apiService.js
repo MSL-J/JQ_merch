@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import localforage from "localforage";
+import * as XLSX from "xlsx";
 import { justQAPi, crawlingAPI } from "utils/api";
 
 export function categoryAPI(selected, category, callBack) {
@@ -94,5 +95,19 @@ export function nameCrawlingApi(input) {
     }).then((res) => {
       resolve(res.json());
     });
+  });
+}
+
+export function justQCategoryXLSX() {
+  return new Promise((resolve, reject) => {
+    fetch("Category.xlsx")
+      .then((res) => res.arrayBuffer())
+      .then((res) => {
+        let file = XLSX.read(res, { type: "array" });
+        const workbook = file.Sheets[file.SheetNames[0]];
+        const category = XLSX.utils.sheet_to_json(workbook, { header: 1 });
+        category.shift();
+        resolve(category);
+      });
   });
 }
