@@ -10,6 +10,7 @@ import CategoryPopup from "components/CategoryPopup";
 import "./namePopup.scss";
 import "./keywordPopup.scss";
 import styled from "styled-components";
+import { categorySearch } from "services/categoryService";
 
 class Modified extends React.Component {
   constructor(props) {
@@ -169,82 +170,10 @@ class Modified extends React.Component {
 
   search = () => {
     let { categoryList, newCategoryInput } = this.state;
-    let categoryName = [];
-    let categoryNum = [];
-    for (let i in categoryList) {
-      categoryName.push(categoryList[i][0]);
-      categoryNum.push(categoryList[i][1]);
-    }
-
-    newCategoryInput = newCategoryInput.trim();
-    let filteredCategory = [];
-    if (newCategoryInput.includes("+")) {
-      //'+' works as 'or'
-      let eachInput = newCategoryInput.split("+");
-      eachInput.forEach((w) => {
-        w = w.trim();
-        if (isNaN(w)) {
-          let eachCategory = categoryName.filter((c) => {
-            return c.includes(w);
-          });
-
-          filteredCategory = filteredCategory.concat(eachCategory);
-        } else {
-          for (let i in categoryNum) {
-            categoryNum[i].toString().includes(w) &&
-              filteredCategory.push(categoryName[i]);
-          }
-        }
+    categorySearch(categoryList, newCategoryInput).then((filteredCategory) => {
+      this.setState({
+        filteredCategory,
       });
-      filteredCategory = [...new Set(filteredCategory)]; //delete duplicates
-    } else if (newCategoryInput.includes("&")) {
-      // '&' works as 'and'
-      let eachInput = newCategoryInput.split("&");
-      eachInput.forEach((w, idx) => {
-        w = w.trim();
-        if (idx === 0) {
-          if (isNaN(w)) {
-            let eachCategory = categoryName.filter((c) => {
-              return c.includes(w);
-            });
-            filteredCategory = filteredCategory.concat(eachCategory);
-          } else {
-            for (let i in categoryNum) {
-              categoryNum[i].toString().includes(w) &&
-                filteredCategory.push(categoryName[i]);
-            }
-          }
-        } else {
-          if (isNaN(w)) {
-            filteredCategory = filteredCategory.filter((c) => {
-              return c.includes(w);
-            });
-          } else {
-            let newCategory = [];
-            for (let i in categoryNum) {
-              categoryNum[i].toString().includes(w) &&
-                filteredCategory.includes(categoryName[i]) &&
-                newCategory.push(categoryName[i]);
-            }
-            filteredCategory = newCategory;
-          }
-        }
-      });
-    } else {
-      if (isNaN(newCategoryInput)) {
-        filteredCategory = categoryName.filter((c) => {
-          return c.includes(newCategoryInput);
-        });
-      } else {
-        for (let i in categoryNum) {
-          categoryNum[i].toString().includes(newCategoryInput) &&
-            filteredCategory.push(categoryName[i]);
-        }
-      }
-    }
-
-    this.setState({
-      filteredCategory,
     });
   };
 
@@ -256,7 +185,6 @@ class Modified extends React.Component {
 
   setCategory = () => {
     this.close("category");
-
     this.setState({
       newCategoryName: this.state.selectedCategory,
     });
