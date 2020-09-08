@@ -47,7 +47,6 @@ app.get("/getNaverName", async (req, res) => {
         return relArr;
       }
     );
-    console.log("rel", rel);
 
     let rec = await page.$$eval(".filter_finder_tit__2VCKd", (elArr) => {
       return elArr.reduce((res, el, idx) => {
@@ -64,7 +63,6 @@ app.get("/getNaverName", async (req, res) => {
         return res;
       }, []);
     });
-    console.log("rec", rec);
 
     res.json({ rel, rec });
   } catch (err) {

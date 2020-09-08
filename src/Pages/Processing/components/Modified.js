@@ -6,11 +6,11 @@ import {
   nameCrawlingApi,
   justQCategoryXLSX,
 } from "../../../services/apiService";
+import { categorySearch } from "services/categorySearchService";
 import CategoryPopup from "components/CategoryPopup";
 import "./namePopup.scss";
 import "./keywordPopup.scss";
 import styled from "styled-components";
-import { categorySearch } from "services/categoryService";
 
 class Modified extends React.Component {
   constructor(props) {
@@ -42,6 +42,7 @@ class Modified extends React.Component {
     window.addEventListener("beforeunload", () => {
       this.close("name");
       this.close("keyword");
+      this.close("category");
     });
 
     window.setInterval(() => {
@@ -184,11 +185,14 @@ class Modified extends React.Component {
   };
 
   setCategory = () => {
-    this.close("category");
-    this.setState({
-      newCategoryName: this.state.selectedCategory,
-    });
-    // here is where you fetch data of the chosen category, as a callback of the setState above
+    this.setState(
+      {
+        newCategoryName: this.state.selectedCategory,
+      },
+      () => {
+        this.close("category");
+      }
+    );
   };
 
   render() {
@@ -381,7 +385,7 @@ class Modified extends React.Component {
           </div>
           {category && (
             <CategoryPopup
-              close={() => this.close()}
+              close={() => this.close("category")}
               findCategory={(e) => this.findCategory(e)}
               enterCategory={(e) => {
                 this.enterCategory(e);

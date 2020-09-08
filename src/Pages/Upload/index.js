@@ -5,7 +5,7 @@ import localforage from "localforage";
 import CategoryPopup from "components/CategoryPopup";
 import { categoryAPI, justQCategoryXLSX } from "services/apiService";
 import { repo } from "utils/production";
-import { categorySearch } from "services/categoryService";
+import { categorySearch } from "services/categorySearchService";
 import styled from "styled-components";
 
 class Upload extends Component {
@@ -36,6 +36,7 @@ class Upload extends Component {
         category,
       });
     });
+
     window.addEventListener("beforeunload", () => {
       this.close();
     });

@@ -101,3 +101,22 @@ export function addPhoto2S3(albumName, file, idx) {
   let promiseEach = each.promise();
   return promiseEach;
 }
+
+export function addImgs2S3(imgUrl, data, name, img) {
+  return new Promise(async (resolve, reject) => {
+    let s3Url = [];
+    const urls = await Promise.all(
+      imgUrl.map((file, idx) => {
+        return addPhoto2S3(data[name], file, idx);
+      })
+    );
+    urls.forEach((url) => {
+      s3Url.push(url.Location);
+    });
+    s3Url.length &&
+      s3Url.forEach((el, idx) => {
+        data[img + idx] = `${'"' + el + '"'}`;
+      });
+    resolve(data);
+  });
+}

@@ -4,14 +4,8 @@ import Modified from "./components/Modified";
 import htmlToImage from "html-to-image";
 import ReactCrop from "react-image-crop";
 import localforage from "localforage";
-import AWS from "aws-sdk";
 import { repo } from "utils/production";
-import {
-  bucketRegion,
-  IdentityPoolId,
-  createS3Album,
-  addPhoto2S3,
-} from "services/cropNSaveService";
+import { createS3Album, addImgs2S3 } from "services/cropNSaveService";
 import "react-image-crop/dist/ReactCrop.css";
 import styled from "styled-components";
 
@@ -51,14 +45,15 @@ class Processing extends Component {
   }
 
   componentDidMount = async () => {
-    const raw = await localforage.getItem("data");
-    const row = await localforage.getItem("row");
-    const data = raw[row];
+    const { column } = this.state;
 
     window.onscroll = () => {
       window.scrollTo(0, 0);
     };
 
+    const raw = await localforage.getItem("data");
+    const row = await localforage.getItem("row");
+    const data = raw[row];
     await this.setState({
       raw,
       row,
@@ -78,23 +73,19 @@ class Processing extends Component {
     let modNode = this.rawHTML;
     modNode.innerHTML = await newState;
 
-    let imgs = Array.from(modNode.getElementsByTagName("img")),
-      len = imgs.length,
-      counter = 0;
-
+    let len = Array.from(modNode.getElementsByTagName("img")).length;
+    let counter = 0;
     let incrementCounter = () => {
       counter++;
       if (counter === len) {
         this.html2Image(modNode);
       }
     };
-
     Array.from(modNode.getElementsByTagName("img")).forEach((img) => {
       if (img.complete) incrementCounter();
       else img.addEventListener("load", incrementCounter, false);
     });
 
-    const { column } = this.state;
     createS3Album(this.state.data[column.name]);
   };
 
@@ -105,9 +96,6 @@ class Processing extends Component {
         document
           .getElementById("detailBox")
           .getElementsByTagName("img")[0].src = dataUrl;
-        return dataUrl;
-      })
-      .then((dataUrl) => {
         this.setState({
           ogDetailUrl: dataUrl,
           loading: false,
@@ -116,7 +104,7 @@ class Processing extends Component {
         document.getElementById("detailHTML").style.display = "none";
       })
       .catch(function (error) {
-        alert("상세페이지를 이미지로 convert하는데 문제가 생겼습니다: ", error);
+        alert("상세페이지를 이미지로 변환하는데 문제가 생겼습니다: ", error);
       });
   };
 
@@ -147,15 +135,14 @@ class Processing extends Component {
     }
   };
 
-  onCropChange = (crop, percentCrop) => {
+  onCropChange = (crop) => {
     this.setState({ crop });
   };
 
   async makeClientCrop(crop) {
     if (this.imageRef && crop.width && crop.height) {
       const croppedImageUrl = await this.getCroppedImg(this.imageRef, crop);
-
-      await this.setState({
+      this.setState({
         croppedImageUrl: [...this.state.croppedImageUrl, croppedImageUrl],
       });
     }
@@ -168,7 +155,6 @@ class Processing extends Component {
     canvas.width = 1000;
     canvas.height = 1000;
     const ctx = canvas.getContext("2d");
-
     await ctx.drawImage(
       image,
       crop.x * scaleX,
@@ -209,6 +195,7 @@ class Processing extends Component {
       ogDetailUrl,
       croppedImageUrl,
       croppedImageCoord,
+      column,
     } = this.state;
     const {
       categoryCode,
@@ -241,29 +228,11 @@ class Processing extends Component {
     data[orgDetailUrl] = ogDetailUrl;
     croppedImageCoord && (data[relCoord] = croppedImageCoord);
 
-    AWS.config.update({
-      region: bucketRegion,
-      credentials: new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: IdentityPoolId,
-      }),
-    });
-
-    const urls = await Promise.all(
-      croppedImageUrl.map((file, idx, arr) => {
-        return addPhoto2S3(data[name], file, idx);
-      })
+    await addImgs2S3(croppedImageUrl, data, column.name, croppedImg).then(
+      (modifiedData) => {
+        raw[row] = modifiedData;
+      }
     );
-
-    let s3Url = [];
-    urls.forEach((url) => {
-      s3Url.push(url.Location);
-    });
-    s3Url.length &&
-      s3Url.forEach((el, idx) => {
-        data[croppedImg + idx] = `${'"' + el + '"'}`;
-      });
-
-    raw[row] = data;
 
     localforage.setItem("data", raw, () => {
       this.setState(

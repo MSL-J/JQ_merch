@@ -4,10 +4,11 @@ import * as XLSX from "xlsx";
 import { justQAPi, crawlingAPI } from "utils/api";
 
 export function categoryAPI(selected, category, callBack) {
+  /* changing category name to corresponding category number,
+  assuming that fetching is done through category number */
   let fetchCateNum = category.map((el) => el[1])[
     category.map((el) => el[0]).indexOf(selected)
   ];
-  // assuming that fetching is done through its category number
   fetch(justQAPi + "?category=" + fetchCateNum)
     .then((res) => res.json())
     .then((res) => {

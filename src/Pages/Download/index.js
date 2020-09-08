@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { WhichRow } from "../Processing";
-import * as XLSX from "xlsx";
 import localforage from "localforage";
 import { send2ServerAPI } from "services/apiService";
+import { downloadXLSX } from "services/downloadXLSXService";
 import { repo } from "utils/production";
 import styled from "styled-components";
 
@@ -44,7 +44,7 @@ class Download extends Component {
     raw[0][101] = "(URL)추출한_이미지9";
     raw[0][102] = "(URL)추출한_이미지10";
 
-    await this.setState({
+    this.setState({
       raw,
       row,
     });
@@ -53,19 +53,10 @@ class Download extends Component {
   nextRow = async () => {
     const { raw, row } = this.state;
     await localforage.setItem("data", raw);
-    await localforage.setItem("row", row + 1, () => {
+    localforage.setItem("row", row + 1, () => {
       this.props.history.push(`${repo}/processing`);
     });
     // re-setting item as the user might choose to download and/or sent2server but still want to continue
-  };
-
-  download = async () => {
-    const { raw } = this.state;
-    const workBook = XLSX.utils.book_new(); // create a new blank book
-    const workSheet = XLSX.utils.json_to_sheet(raw, { skipHeader: true });
-    await XLSX.utils.book_append_sheet(workBook, workSheet, "data"); // add the worksheet to the book
-    await XLSX.writeFile(workBook, "[수정본] 데이터.xlsx"); // initiate a file download in browser
-    await localforage.clear(); // delete locally saved data
   };
 
   render() {
@@ -88,7 +79,7 @@ class Download extends Component {
           </button>
           <button
             onClick={() => {
-              this.download();
+              downloadXLSX(raw);
             }}
           >
             그만하고 엑셀로 다운받기
