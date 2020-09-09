@@ -1,5 +1,7 @@
 import AWS from "aws-sdk";
 
+/*change the variables in .env file to Just Q aws s3 bucket info
+currently set with dev's test s3 bucket info */
 export const bucketName = process.env.REACT_APP_BUCKET_NAME;
 export const bucketRegion = process.env.REACT_APP_BUCKET_REGION;
 export const IdentityPoolId = process.env.REACT_APP_IDENTITY_POOL_ID;
