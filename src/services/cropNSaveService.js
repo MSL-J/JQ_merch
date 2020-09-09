@@ -1,9 +1,8 @@
 import AWS from "aws-sdk";
 
-export const bucketName = "just-q-crop-img";
-export const bucketRegion = "ap-northeast-2";
-export const IdentityPoolId =
-  "ap-northeast-2:9c0baf26-7771-4fd8-9f54-2791447042a7";
+export const bucketName = process.env.REACT_APP_BUCKET_NAME;
+export const bucketRegion = process.env.REACT_APP_BUCKET_REGION;
+export const IdentityPoolId = process.env.REACT_APP_IDENTITY_POOL_ID;
 
 export function createS3Album(name) {
   AWS.config.update({
