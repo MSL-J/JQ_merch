@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/JQ_merch/static/css/main.b8941c20.chunk.css",
+    "main.js": "/JQ_merch/static/js/main.a094a036.chunk.js",
+    "main.js.map": "/JQ_merch/static/js/main.a094a036.chunk.js.map",
+    "runtime-main.js": "/JQ_merch/static/js/runtime-main.2226b163.js",
+    "runtime-main.js.map": "/JQ_merch/static/js/runtime-main.2226b163.js.map",
+    "static/css/2.1bce3852.chunk.css": "/JQ_merch/static/css/2.1bce3852.chunk.css",
+    "static/js/2.99229cdd.chunk.js": "/JQ_merch/static/js/2.99229cdd.chunk.js",
+    "static/js/2.99229cdd.chunk.js.map": "/JQ_merch/static/js/2.99229cdd.chunk.js.map",
+    "index.html": "/JQ_merch/index.html",
+    "precache-manifest.133a77a3f4b02b412b7c28d6612b9eec.js": "/JQ_merch/precache-manifest.133a77a3f4b02b412b7c28d6612b9eec.js",
+    "service-worker.js": "/JQ_merch/service-worker.js",
+    "static/css/2.1bce3852.chunk.css.map": "/JQ_merch/static/css/2.1bce3852.chunk.css.map",
+    "static/css/main.b8941c20.chunk.css.map": "/JQ_merch/static/css/main.b8941c20.chunk.css.map",
+    "static/js/2.99229cdd.chunk.js.LICENSE.txt": "/JQ_merch/static/js/2.99229cdd.chunk.js.LICENSE.txt",
+    "static/media/common.css": "/JQ_merch/static/media/notokr-regular.a288961d.woff2"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2226b163.js",
+    "static/css/2.1bce3852.chunk.css",
+    "static/js/2.99229cdd.chunk.js",
+    "static/css/main.b8941c20.chunk.css",
+    "static/js/main.a094a036.chunk.js"
+  ]
+}
