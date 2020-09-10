@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const http = require("http");
+require("dotenv").config();
 
 const app = express();
 app.use(express.json());
@@ -26,6 +27,8 @@ app.get("/getNaverName", async (req, res) => {
       "--single-process",
     ],
     headless: true,
+    /*with the change of directories of the server, 
+    executablePath should be changed accordingly*/
     executablePath: "/usr/bin/chromium-browser",
     defaultViewport: {
       width: 1920,
@@ -74,6 +77,6 @@ app.get("/getNaverName", async (req, res) => {
 
 const server = http.createServer(app);
 
-server.listen(4000, () => {
+server.listen(process.env.CRAWLING_SERVER_PORT, () => {
   console.log("Server online!");
 });
