@@ -12,7 +12,8 @@
   - Frontend: services/apiService.js의 _nameCrawlingApi()_
 - 현재 localhost의 port 4000에서 서버가 구동되도록 되어있음. (언제든 변경 가능 - Front에서는 _utils/api.js의 **crawlingAPI**_, Backend에서는 _.env의 **CRAWLING-SERVER-PORT**_)
 - Web server(_React_)는 local에서 구동시 port 3000이며, package.json의 scripts의 dev에 나타나있듯이 *concurrently*를 이용해 terminal에서 _npm run dev_ 실행시 web server와 backend server 동시 시작.
-- Build 이후 github pages에서 구동시 _crawler.js_ 를 외부 서버에서 따로 구동시킨 후 front에서 _utils/api.js의 **crawlingAPI**_ 만 바꿔주면 될 것을 예상.
+- Build와 Deploy는 gh-pages로 checkout 한 후 _npm run deploy_ 으로 local에서 build와 gh-pages branch로 push까지 실행됨
+- Deploy 이후 github pages에서 구동시 _crawler.js_ 를 외부 서버에서 따로 구동시킨 후 front에서 _utils/api.js의 **crawlingAPI**_ 만 바꿔주면 될 것을 예상.
 
 ## Issues faced whilst developing
 
