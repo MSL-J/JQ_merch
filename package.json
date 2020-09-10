@@ -42,7 +42,7 @@
     "client": "npm run start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -b gh-pages -d build"
+    "deploy": "master -b gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
