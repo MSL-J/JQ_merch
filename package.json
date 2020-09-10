@@ -43,7 +43,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "predeploy": "npm run build",
     "deploy": "npm run clean && gh-pages -d build -b gh-pages -e build",
-    "clean": "rm -rf node_modules/gh-pages/.cache"
+    "clean": "rm -rf node_modules/.cache/gh-pages/"
   },
   "eslintConfig": {
     "extends": "react-app"
