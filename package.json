@@ -31,7 +31,7 @@
     "react-scripts": "^3.4.3",
     "stable": "^0.1.8",
     "styled-components": "^5.1.1",
-    "xlsx": "^0.16.4"
+    "xlsx": "^0.17.0"
   },
   "scripts": {
     "start": "react-scripts start",
